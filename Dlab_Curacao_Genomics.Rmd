@@ -1,16 +1,35 @@
 ---
 title: "Dlab_Curacao_Genomics"
-author: "Matias Gomez"
+author: "Matias Gomez-Corrales -- mgomezco@nova.edu"
 date: "11/8/2024"
-output: html_document
+output: 
+   html_document:
+    theme: flatly
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
 ---
 
----
-title: "Diploria_curaçao"
-author: "Matias Gomez"
-date: "05/9/2021"
-output: md_document
----
+***
+
+# About this document
+
+*** 
+
+All analyses were conducted in R (version 4.1.1, 2021-08-10). This markdown file outlines each step to assess genetic structure from genotyping analysis using custom SNPsaurus scripts to generate a VCF for the brain coral (*Diploria labyrinthiformis*) and two spawning populations in Curaçao (Southern Caribbean).
+
+If you have any issues or questions about the code please feel free to send an email to mgomezco@nova.edu
+
+*** 
+
+
+For the following analyses we will require the use of multiple different R packages, we can use the package *pacman* to quickly load them.
+
+```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("vcfR", "adegenet", "parallel", "ggplot2", "RColorBrewer", "hierfstat", "patchwork", "tidyverse", "poppr","boa","pcadapt","qvalue","Hmisc")
+```
+
 
 ```{bash eval=FALSE}
 cd /data/pradalab/mgomez/Diploria/curaçao/snp_filtering
@@ -580,7 +599,6 @@ Run Time = 9.00 seconds
 ```
 
 ## 5301 SNPs in 45 individuals
-
 
 ## Identify clones and remove them from the VCF file. Note that by having tecnical replicates we can ascertain whether or not the clone identification process is accurate
 
@@ -2399,6 +2417,7 @@ sbatch diploria_tree.sh
 
 Submitted batch job 1904452
 ```
+
 
 
 
