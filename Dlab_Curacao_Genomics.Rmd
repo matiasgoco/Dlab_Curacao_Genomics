@@ -1491,6 +1491,15 @@ p <- p +theme
 p
 ```
 
+Variance explained by the PCs
+
+```{r}
+round(diploria.genlight.pca$eig/sum(diploria.genlight.pca$eig)*100, 2)
+```
+
+1st PC= 12.34% and 1nd PC=3.82  Variance
+
+
 ```{r}
 diploria.genlight.pca$eig
 diploria.genlight.pca$scores
@@ -1500,6 +1509,7 @@ diploria.genlight.pca$scores
 ### Load pop info
 
 ```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 pop_info <-read.table("diploria_pop_data_35ind.txt", header=TRUE)
 pop_info
 ```
@@ -1514,6 +1524,13 @@ pop(diploria.genlight)
 ```
 
 
+```{r}
+pop <-pop(diploria.genlight)
+pop
+```
+
+
+
 ## https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html
 
 ## Manually assign colors to each season Autumn (#FF9833), Spring (#01B050), Unknown (#000000), and Both (#CC0099)
@@ -1524,11 +1541,34 @@ cols_season
 ```
 
 
+
+
+Changing colors
+
+## Manually assign colors to each season Autumn ("#ee7733"), Spring ("#009988"), Unknown ("#0077bb"), and Both ("#e53d69")
+
+Font: Aptos
+
+Color-blind friendly palette:
+Spring: Teal (0, 153, 136)
+Autumn: Orange (238, 119, 51)
+Both seasons: Magenta (229, 61, 105)
+Unknown: Blue (0, 119, 187)
+
+Border around all panels: Gray (213, 218, 219)
+
+```{r}
+cols_season <- (values=c( "#ee7733","#e53d69","#009988","#0077bb"))
+cols_season
+```
+
+
 ```{r}
 library(ggplot2)
+
 set.seed(9)
-p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour=pop))
-p <- p + geom_point(size=3)
+p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour =pop))
+p <- p + geom_point(size=12)
 p <- p + scale_color_manual(values = cols_season) 
 p <- p + geom_hline(yintercept = 0)
 p <- p + geom_vline(xintercept = 0)
@@ -1536,8 +1576,9 @@ theme<-theme(panel.background = element_blank(),panel.border=element_rect(fill=N
                element_blank(),panel.grid.minor = element_blank(),strip.background=element_blank(),
              axis.text.x=element_text(colour="black"),axis.text.y=element_text(colour="black"),
              axis.ticks=element_line(colour="black"),plot.margin=unit(c(1,1,1,1),"line"))
-p <- p +theme
-p
+Dlab_PCA <- p+ theme_test() + xlab("PC1 (12.3 %)") + ylab("PC2 (3.8 %)")+
+  labs(color = "Spawning Season") + theme(text = element_text(size = 25, face="plain"))
+Dlab_PCA
 ```
 
 
