@@ -16,7 +16,7 @@ output:
 
 *** 
 
-All analyses were conducted in R (version 4.1.1, 2021-08-10). This markdown file outlines each step to assess genetic structure from genotyping analysis using custom SNPsaurus scripts to generate a VCF for the brain coral (*Diploria labyrinthiformis*) and two spawning populations in Curaçao (Southern Caribbean).
+All analyses were conducted in R (4.4.2, 2024-10-31). This markdown file outlines each step to assess genetic structure from genotyping analysis using custom SNPsaurus scripts to generate a VCF for the brain coral (*Diploria labyrinthiformis*) and two spawning populations in Curaçao (Southern Caribbean).
 
 If you have any issues or questions about the code please feel free to send an email to mgomezco@nova.edu
 
@@ -28,6 +28,12 @@ For the following analyses we will require the use of multiple different R packa
 ```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load("vcfR", "adegenet", "parallel", "ggplot2", "RColorBrewer", "hierfstat", "patchwork", "tidyverse", "poppr","boa","pcadapt","qvalue","Hmisc")
+```
+
+Set working dir in r
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 ```
 
 
@@ -1431,6 +1437,7 @@ Run Time = 4.00 seconds
 
 
 ```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 library(vcfR)
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf <-read.vcfR("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf")
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf 
