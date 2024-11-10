@@ -2332,7 +2332,8 @@ Dlab_combined <- (Dlab_PCA +
                   theme(plot.tag = element_text(size = 20))) / 
                  (Dlab_Admixture_k2 + 
                   plot_annotation(tag_levels = "(c)") & 
-                  theme(plot.tag = element_text(size = 20)))
+                  theme(plot.tag = element_text(size = 20))) +
+  plot_annotation(tag_level = "a")
 
 # Display the combined plot
 Dlab_combined
