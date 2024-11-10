@@ -1587,7 +1587,7 @@ library(ggplot2)
 
 set.seed(9)
 p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour = pop)) +
-  geom_point(size=12) +
+  geom_point(size=8) +
   scale_color_manual(values = cols_season) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
@@ -1610,7 +1610,7 @@ Dlab_PCA <- p +
   ylab("PC2 (3.8 %)") + 
   labs(color = "Spawning Season") + 
   theme(text = element_text(size = 25, face = "plain"),
-        legend.position = c(0.5, 0.9),  # Center the legend
+        legend.position = c(0.5, 0.7),  # Center the legend
         legend.justification = c(0.5, 0.5),   # Move legend further up (adjust Y-value)
         legend.background = element_rect(fill = "white", color = "black")) # Optional: add background to legend
 
@@ -1829,11 +1829,12 @@ Dlab_DAPC<-ggplot(pca_scores, aes(x = `LD1`, fill = pop)) +
     x = "Discriminant Function 1",
     y = "Density"
   ) +
-  xlim(-6, 9)  # Adjust limits to desired range
+  xlim(-6, 8.5)  # Adjust limits to desired range
 
 Dlab_DAPC
 ```
 
+```
 
 ## Admixture analysis
 
@@ -2312,6 +2313,55 @@ Dlab_Admixture_k2
 
 
 ```
+
+
+
+```{r}
+# Install patchwork if you haven't already
+# install.packages("patchwork")
+
+# Load the patchwork package
+library(patchwork)
+
+# Combine the plots vertically and add labels
+Dlab_combined <- (Dlab_PCA + 
+                  plot_annotation(tag_levels = "(a)") & 
+                  theme(plot.tag = element_text(size = 20))) / 
+                 (Dlab_DAPC + 
+                  plot_annotation(tag_levels = "(b)") & 
+                  theme(plot.tag = element_text(size = 20))) / 
+                 (Dlab_Admixture_k2 + 
+                  plot_annotation(tag_levels = "(c)") & 
+                  theme(plot.tag = element_text(size = 20)))
+
+# Display the combined plot
+Dlab_combined
+```
+
+```{r}
+
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+ggsave("Dlab_combined_plot.pdf", 
+       plot = Dlab_combined, 
+       width = 25, 
+       height = 45, 
+       dpi = 300, 
+       units = "cm", 
+       bg = "white")
+       
+       
+       
+ggsave("Dlab_combined_plot.png", 
+       plot = Dlab_combined, 
+       width = 25, 
+       height = 45, 
+       dpi = 300, 
+       units = "cm", 
+       bg = "white")
+```
+
+
+
 
 
 ## Genetic diversity statistics
