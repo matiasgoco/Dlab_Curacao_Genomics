@@ -1834,7 +1834,7 @@ Dlab_DAPC<-ggplot(pca_scores, aes(x = `LD1`, fill = pop)) +
 Dlab_DAPC
 ```
 
-```
+
 
 ## Admixture analysis
 
