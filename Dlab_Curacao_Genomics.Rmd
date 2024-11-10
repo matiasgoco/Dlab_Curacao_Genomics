@@ -1835,8 +1835,6 @@ Dlab_DAPC
 ```
 
 
-
-
 ## Admixture analysis
 
 ## 1,481 SNPs and 36 colonies
@@ -2129,40 +2127,34 @@ k CV
 ```
 
 
-
-
-
-
 ```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 admixt_k8_CV_error_table.txt <- read.table("admixt_k8_CV_error_table.txt", header = T)
 admixt_k8_CV_error_table.txt
 ```
 
-## Plot CV erro 
+## Plot CV error 
 
 ## https://github.com/laurabenestan/Admixture
 
 
 ```{r}
-library(ggplot2)
-graph_title="Cross-Validation plot"
+graph_title="Admixture Cross-Validation plot"
 x_title="K"
 y_title="Cross-validation error"
 graph_1<-ggplot(admixt_k8_CV_error_table.txt,aes(x=k,y=CV))
-graph_1+geom_line()+scale_x_continuous(breaks=c(1:8))+
+graph_1+geom_line(size=1)+scale_x_continuous(breaks=c(1:10))+
   labs(title=graph_title)+
   labs(x=x_title)+
   labs(y=y_title)+
+  theme_bw()+
   theme(axis.text.x=element_text(colour="black"))+
   theme(legend.title=element_blank())+
-  theme(axis.text.y=element_text(colour="black",size=12))+
-  theme(axis.text.x=element_text(colour="black",size=12))+
+  theme(axis.text.y=element_text(colour="black",size=18))+
+  theme(axis.text.x=element_text(colour="black",size=18))+
   theme(panel.border = element_rect(colour="black", fill=NA, size=3),
         axis.title=element_text(size=18,colour="black",family="Helvetica",face="bold"))
 ```
-
-
-
 
 
 ## Take a look at the CV (CROSS VALIDATION) lowest value. The lowest values is the one that best explains our data. In our particular case is k=1 with a CV= 0.55001, closely followed by k=2 CV=0.55591. Therefore, we want to plot at least the k=2 to see patterns of admixture 
@@ -2179,6 +2171,7 @@ scp -r matias_gomez@bluewaves.uri.edu://data/pradalab/mgomez/Diploria/curaçao/s
 
 
 ```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 library(RColorBrewer)
 
 tbl_k2 <- read.table("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.2.Q")
@@ -2186,10 +2179,14 @@ tbl_k2
 
 ```
 
-```{r}
-cols_dapc <- (values=c( "#FF9833", "#01B050"))
-cols_dapc
 
+```{r}
+cols_dapc <- (values=c("#ee7733","#009988"))
+cols_dapc
+```
+
+
+```{r}
 par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
 barplot(t(as.matrix(tbl_k2)), col = cols_dapc, ylab = "Anc. Proportions", border= NA, space=0)
 ```
@@ -2240,6 +2237,7 @@ UK_6	Spring	0.00001	0.99999	Spring
 
 
 ```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 admix_table <- read.table("diploria_admixture_table_35ind.txt", header = T) 
 admix_table
 ```
@@ -2257,6 +2255,62 @@ ordered
 ```{r}
 par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
 barplot(t(as.matrix(ordered[,3:4])), col = cols_dapc, ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered$Colony), las =2)
+```
+
+```{r}
+# Create the bar plot for ancestral proportions
+Dlab_Admixture_k2<- barplot(t(as.matrix(ordered[, 3:4])), 
+        col = cols_dapc,         # Custom colors for the bars
+        ylab = "Ancestry Proportions", # Y-axis label
+        xlab= "Colony ID",
+        border = NA,             # No border around bars
+        space = 0.1,               # No space between bars
+        names.arg = ordered$Colony, # Colony names as X-axis labels
+        las = 2                   # Rotate X-axis labels vertically
+)
+
+Dlab_Admixture_k2
+```
+
+
+
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Reshape the data to long format for ggplot2
+ordered_long <- pivot_longer(ordered, 
+                             cols = c("Prob_1", "Prob_2"), 
+                             names_to = "Ancestor", 
+                             values_to = "Proportion")
+
+# Ensure 'Colony' is an ordered factor based on 'Prob_1'
+ordered_long$Colony <- factor(ordered_long$Colony, levels = ordered$Colony)
+
+# Create the stacked bar plot using ggplot2
+Dlab_Admixture_k2 <- ggplot(ordered_long, aes(x = Colony, y = Proportion, fill = Ancestor)) + 
+  geom_bar(stat = "identity", position = "stack", width = 0.9, color = "black") +  # Reduced width for closer bars
+  scale_fill_manual(values = cols_dapc) +  # Custom colors for the ancestors
+  labs(
+    x = "Colony ID", 
+    y = "Ancestry Proportions"
+  ) +
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 25, face = "plain"),
+    axis.title = element_text(size = 25, face = "plain"),
+    axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels vertically
+    panel.grid = element_blank(),  # Remove grid lines
+    panel.border = element_rect(color = "black", fill = NA, size = 1.5),  # Border around the plot
+    legend.position = "none",  # Remove the legend
+    plot.margin = unit(c(0.5, 1, 0.5, 1), "cm")  # Further reduce the space between the plot and the edges
+  ) +
+  coord_cartesian(ylim = c(0, 1)) +  # Adjust the Y-axis to match the proportions (0 to 1)
+  scale_y_continuous(expand = c(0, 0))  # Remove space between bars and the top/bottom axis lines
+
+Dlab_Admixture_k2
+
+
 ```
 
 
