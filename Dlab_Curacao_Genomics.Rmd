@@ -1563,6 +1563,7 @@ cols_season
 ```
 
 
+
 ```{r}
 library(ggplot2)
 
@@ -1578,6 +1579,42 @@ theme<-theme(panel.background = element_blank(),panel.border=element_rect(fill=N
              axis.ticks=element_line(colour="black"),plot.margin=unit(c(1,1,1,1),"line"))
 Dlab_PCA <- p+ theme_test() + xlab("PC1 (12.3 %)") + ylab("PC2 (3.8 %)")+
   labs(color = "Spawning Season") + theme(text = element_text(size = 25, face="plain"))
+Dlab_PCA
+```
+
+```{r}
+library(ggplot2)
+
+set.seed(9)
+p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour = pop)) +
+  geom_point(size=12) +
+  scale_color_manual(values = cols_season) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+
+# Custom theme for styling
+theme <- theme(panel.background = element_blank(),
+               panel.border = element_rect(fill=NA),
+               panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank(),
+               strip.background = element_blank(),
+               axis.text.x = element_text(colour = "black"),
+               axis.text.y = element_text(colour = "black"),
+               axis.ticks = element_line(colour = "black"),
+               plot.margin = unit(c(1, 1, 1, 1), "line"))
+
+# Create the PCA plot and position the legend in the center
+Dlab_PCA <- p + 
+  theme_test() + 
+  xlab("PC1 (12.3 %)") + 
+  ylab("PC2 (3.8 %)") + 
+  labs(color = "Spawning Season") + 
+  theme(text = element_text(size = 25, face = "plain"),
+        legend.position = c(0.5, 0.9),  # Center the legend
+        legend.justification = c(0.5, 0.5),   # Move legend further up (adjust Y-value)
+        legend.background = element_rect(fill = "white", color = "black")) # Optional: add background to legend
+
+# Print the plot
 Dlab_PCA
 ```
 
@@ -1707,18 +1744,97 @@ dapc_diploria
 scatter.dapc(dapc_diploria, scree.pca = F, scree.da = F)
 ```
 
+
 ## Now, based on the PCA groupings and the assignation of individuals two the main DAPC, we color the DAPC to show the Spring and Autumn groups
 
-## Manually assign colors to each season Spring (#01B050), Both (#CC0099), Autumn (#FF9833), Unknown (#000000)
+## Manually assign colors to each season Autumn ("#ee7733"), Spring ("#009988"), Unknown ("#0077bb"), and Both ("#e53d69")
 
 ```{r}
-cols_dapc <- (values=c("#FF9833","#01B050"))
+cols_dapc <- (values=c("#ee7733","#009988"))
 cols_dapc
 ```
 
 ```{r}
 scatter(dapc_diploria, scree.pca = F, scree.da = F, col=cols_dapc )
 ```
+
+## Customizing plot
+
+### Step 1: Extract the raw data from the dapc object
+
+After running the dapc function, the resulting object contains various elements, such as individual coordinates (ind.coord), group labels (pop), and discriminant functions. You can use these components to build your own plots.
+
+```{r}
+# Assuming you already have the DAPC object:
+dapc_diploria <- dapc(diploria.genlight, n.pca = 1, n.da = 2)
+
+# Extract the PCA coordinates for each individual (the first two principal components)
+pca_scores <- dapc_diploria$ind.coord
+
+# Create a dataframe to use for ggplot (add population groups)
+pca_scores <- as.data.frame(pca_scores)
+pca_scores$pop <- diploria_clusters_dapc$grp  # Add population groups (e.g., spawning seasons)
+
+# View the first few rows of the PCA scores
+head(pca_scores)
+```
+
+
+dapc_diploria$ind.coord: This gives you the individual coordinates in the principal component space. It typically includes multiple columns (e.g., PC1, PC2, etc.).
+pca_scores$pop: This is the population or group labels you want to color in your density plot or scatter plot (e.g., spawning seasons).
+
+theme(text = element_text(size = 25, face = "plain")
+```{r}
+library(ggplot2)
+
+# Density plot for PC1 with no grid
+ggplot(pca_scores, aes(x = `LD1`, fill = pop)) + 
+  geom_density(alpha = 0.9) +  # Transparency set by alpha
+  scale_fill_manual(values = cols_dapc) +  # Custom colors
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 25, face = "plain"),
+    axis.title = element_text(size = 25, face = "plain"),
+    #legend.position = "top",  # Position legend at the top
+    #legend.title = element_blank(),
+    legend.background = element_rect(fill = "white", color = "black"),
+    panel.grid = element_blank()  # Remove all grid lines
+  ) +
+  labs(
+    x = "Discriminant Function 1",
+    y = "Density"
+  ) +
+  xlim(-6, 9)  # Adjust limits to desired range
+```
+
+
+```{r}
+library(ggplot2)
+
+# Density plot for PC1 with framed axes
+Dlab_DAPC<-ggplot(pca_scores, aes(x = `LD1`, fill = pop)) + 
+  geom_density(alpha = 0.9, color = "black", show.legend = FALSE) +  # Add black border to density areas
+  scale_fill_manual(values = cols_dapc) +  # Custom colors
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 25, face = "plain"),
+    axis.title = element_text(size = 25, face = "plain"),
+    legend.background = element_rect(fill = "white", color = "black"),
+    panel.grid = element_blank(),  # Remove all grid lines
+    panel.border = element_rect(color = "black", fill = NA, size = 1.5),  # Add black border around plot area
+    axis.line = element_blank(),  # Remove default axis lines
+    axis.ticks = element_line(color = "black", size = 1)  # Ensure tick marks are visible
+  ) +
+  labs(
+    x = "Discriminant Function 1",
+    y = "Density"
+  ) +
+  xlim(-6, 9)  # Adjust limits to desired range
+
+Dlab_DAPC
+```
+
+
 
 
 ## Admixture analysis
