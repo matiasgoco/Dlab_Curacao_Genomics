@@ -401,3 +401,397 @@ D_lab_C_sperm	CGAGGCTG-TATCCTCT	run_1287, run_1292
 D_lab_E__sperm	AAGAGGCA-TATCCTCT	run_1287, run_1292
 D_lab_UK_1_sperm	TAAGGCGA-AGAGTAGA	run_1287, run_1292
 D_lab_UK_6_sperm	GGACTCCT-AGAGTAGA	run_1287, run_1292
+
+Ok, so now make a folder to cp these files and merge the ones 
+
+Sequence files for one submission should be in one directory. Do not create complex directory structures where you have directories within directories.
+Do make a new directory for each submission. Your submission subfolder is a temporary holding area and it will be removed once the whole submission is processed.
+
+```{bash}
+$ cd /data/pradalab/mgomez/Diploria/curaçao
+$ mkdir SRA_Submission_Folder_Dlab_Curacao_35_Ind
+```
+
+
+Now cp files here but first unzip run 3285
+
+
+```{bash}
+tar -xvzf raw_reads/run_3285.tar.gz
+```
+
+
+```{bash}
+run_3285/3285_TAGGCATG-ACTGCATA_S162_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-ACTGCATA_S165_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-TAGATCGC_S105_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-CTAAGCCT_S189_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-AGAGTAGA_S142_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-GTAAGGAG_S154_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-TAGATCGC_S107_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-AAGGAGTA_S173_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-CTAAGCCT_S181_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-ACTGCATA_S157_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-AGAGTAGA_S144_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-CTCTCTAT_S111_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-TATCCTCT_S122_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-GTAAGGAG_S151_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-CTAAGCCT_S182_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-CTAAGCCT_S184_L002_R1_001.fastq.gz
+run_3285/Undetermined_S0_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-CTAAGCCT_S186_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-AAGGAGTA_S176_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-GTAAGGAG_S150_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-GTAAGGAG_S145_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-AAGGAGTA_S179_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-TAGATCGC_S104_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-CTCTCTAT_S120_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-ACTGCATA_S158_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-TATCCTCT_S126_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-GTAAGGAG_S155_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-ACTGCATA_S168_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-GTAAGGAG_S147_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-AAGGAGTA_S175_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-TAGATCGC_S100_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-TAGATCGC_S102_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-CTCTCTAT_S113_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-ACTGCATA_S159_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-CTCTCTAT_S109_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-TATCCTCT_S124_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-ACTGCATA_S161_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-CTAAGCCT_S183_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-AGAGTAGA_S136_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-GTAAGGAG_S153_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-AGAGTAGA_S137_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-AAGGAGTA_S180_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-TATCCTCT_S131_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-TAGATCGC_S106_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-ACTGCATA_S160_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-TATCCTCT_S121_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-ACTGCATA_S164_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-CTCTCTAT_S117_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-CTAAGCCT_S185_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-CTCTCTAT_S118_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-TAGATCGC_S108_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-AAGGAGTA_S174_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-AAGGAGTA_S169_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-TATCCTCT_S127_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-AGAGTAGA_S138_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-GTAAGGAG_S146_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-GTAAGGAG_S148_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-TATCCTCT_S130_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-TATCCTCT_S123_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-AAGGAGTA_S172_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-AAGGAGTA_S170_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-AAGGAGTA_S178_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-GTAAGGAG_S156_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-ACTGCATA_S167_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-AGAGTAGA_S133_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-TATCCTCT_S125_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-CTCTCTAT_S115_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-AGAGTAGA_S140_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-CTCTCTAT_S119_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-TAGATCGC_S98_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-AGAGTAGA_S139_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-AGAGTAGA_S135_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-CTCTCTAT_S116_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz
+run_3285/3285_CAGAGAGG-GTAAGGAG_S152_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-GTAAGGAG_S149_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-AGAGTAGA_S134_L002_R1_001.fastq.gz
+run_3285/3285_GGACTCCT-TAGATCGC_S101_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-TAGATCGC_S99_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-AGAGTAGA_S143_L002_R1_001.fastq.gz
+run_3285/3285_CGTACTAG-CTCTCTAT_S110_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-AGAGTAGA_S141_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-ACTGCATA_S166_L002_R1_001.fastq.gz
+run_3285/3285_CGAGGCTG-CTAAGCCT_S190_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-TAGATCGC_S103_L002_R1_001.fastq.gz
+run_3285/3285_TAGGCATG-CTCTCTAT_S114_L002_R1_001.fastq.gz
+run_3285/3285_AGGCAGAA-AAGGAGTA_S171_L002_R1_001.fastq.gz
+run_3285/3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-CTAAGCCT_S187_L002_R1_001.fastq.gz
+run_3285/3285_AAGAGGCA-CTAAGCCT_S191_L002_R1_001.fastq.gz
+run_3285/3285_GTAGAGGA-TATCCTCT_S132_L002_R1_001.fastq.gz
+run_3285/3285_TAAGGCGA-TAGATCGC_S97_L002_R1_001.fastq.gz
+run_3285/3285_CTCTCTAC-ACTGCATA_S163_L002_R1_001.fastq.gz
+run_3285/3285_TCCTGAGC-CTCTCTAT_S112_L002_R1_001.fastq.gz
+```
+
+move run_3285 to snpsaurus folder
+
+
+```{bash}
+$ mv run_3285 snpsaurus/
+```
+
+Now copy from run 3285 to SRA_Submission_Folder_Dlab_Curacao_35_Ind
+
+
+```{bash}
+cp snpsaurus/run_3285/
+```
+
+I’ll check the barcode pairs to ensure they correspond to the correct samples in the list you provided.
+
+Here are the barcode pairs you listed and their corresponding run:
+From the provided list:
+
+    401_dip → CAGAGAGG-TAGATCGC (run_3285)
+
+    402_dip → CAGAGAGG-CTCTCTAT (run_3285)
+
+    403_dip → CAGAGAGG-TATCCTCT (run_3285)
+
+    405_dip → CAGAGAGG-GTAAGGAG (run_3285)
+
+    407_dip → CAGAGAGG-AAGGAGTA (run_3285)
+
+    408_dip → CAGAGAGG-CTAAGCCT (run_3285)
+
+    413_dip → GCTACGCT-CTCTCTAT (run_3285)
+
+    417_dip → GCTACGCT-TATCCTCT (run_3285)
+
+    420_dip → GCTACGCT-AGAGTAGA (run_3285)
+
+    421_dip → GCTACGCT-GTAAGGAG (run_3285)
+
+    422_dip → GCTACGCT-ACTGCATA (run_3285)
+
+    423_dip → GCTACGCT-AAGGAGTA (run_3285)
+
+    424_dip → GCTACGCT-CTAAGCCT (run_3285)
+
+    425_dip → CGAGGCTG-TAGATCGC (run_3285)
+
+    427_dip → CGAGGCTG-CTCTCTAT (run_3285)
+
+    430_dip → CGAGGCTG-TATCCTCT (run_3285)
+
+    431_dip → CGAGGCTG-AGAGTAGA (run_3285)
+
+    432_dip → CGAGGCTG-GTAAGGAG (run_3285)
+
+    435_dip → CGAGGCTG-ACTGCATA (run_3285)
+
+    438_dip → CGAGGCTG-CTAAGCCT (run_3285)
+
+    440_dip → AAGAGGCA-CTAAGCCT (run_3286)
+
+    462_dip → CATACGTA-CTAAGCCT (run_3286)
+
+Corresponding Fastq Files:
+
+Here are the barcode pairs that match your files in the run_3285 directory:
+
+    CAGAGAGG-TAGATCGC → 3285_CAGAGAGG-TAGATCGC_S104_L002_R1_001.fastq.gz
+
+    CAGAGAGG-CTCTCTAT → 3285_CAGAGAGG-CTCTCTAT_S116_L002_R1_001.fastq.gz
+
+    CAGAGAGG-TATCCTCT → 3285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz
+
+    CAGAGAGG-GTAAGGAG → 3285_CAGAGAGG-GTAAGGAG_S152_L002_R1_001.fastq.gz
+
+    CAGAGAGG-AAGGAGTA → 3285_CAGAGAGG-AAGGAGTA_S176_L002_R1_001.fastq.gz
+
+    CAGAGAGG-CTAAGCCT → 3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz
+
+    GCTACGCT-CTCTCTAT → 3285_GCTACGCT-CTCTCTAT_S117_L002_R1_001.fastq.gz
+
+    GCTACGCT-TATCCTCT → 3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz
+
+    GCTACGCT-AGAGTAGA → 3285_GCTACGCT-AGAGTAGA_S141_L002_R1_001.fastq.gz
+
+    GCTACGCT-GTAAGGAG → 3285_GCTACGCT-GTAAGGAG_S153_L002_R1_001.fastq.gz
+
+    GCTACGCT-ACTGCATA → 3285_GCTACGCT-ACTGCATA_S158_L002_R1_001.fastq.gz
+
+    GCTACGCT-AAGGAGTA → 3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz
+
+    GCTACGCT-CTAAGCCT → 3285_GCTACGCT-CTAAGCCT_S185_L002_R1_001.fastq.gz
+
+    CGAGGCTG-TAGATCGC → 3285_CGAGGCTG-TAGATCGC_S106_L002_R1_001.fastq.gz
+
+    CGAGGCTG-CTCTCTAT → 3285_CGAGGCTG-CTCTCTAT_S118_L002_R1_001.fastq.gz
+
+    CGAGGCTG-TATCCTCT → 3285_CGAGGCTG-TATCCTCT_S130_L002_R1_001.fastq.gz
+
+    CGAGGCTG-AGAGTAGA → 3285_CGAGGCTG-AGAGTAGA_S136_L002_R1_001.fastq.gz
+
+    CGAGGCTG-GTAAGGAG → 3285_CGAGGCTG-GTAAGGAG_S149_L002_R1_001.fastq.gz
+
+    CGAGGCTG-ACTGCATA → 3285_CGAGGCTG-ACTGCATA_S160_L002_R1_001.fastq.gz
+
+    CGAGGCTG-CTAAGCCT → 3285_CGAGGCTG-CTAAGCCT_S190_L002_R1_001.fastq.gz
+
+The run_3286 barcodes (440_dip and 462_dip) do not have corresponding files in run_3285 since they are part of a different run.
+
+This will correctly copy the exact files from the run_3285 folder to your destination folder /data/pradalab/mgomez/Diploria/curaçao/SRA_Submission_Folder_Dlab_Curacao_35_Ind/
+
+```{bash}
+$ cp /data/pradalab/mgomez/Diploria/curaçao/snpsaurus/run_3285/{3285_TAGGCATG-ACTGCATA_S162_L002_R1_001.fastq.gz,3285_GCTACGCT-ACTGCATA_S165_L002_R1_001.fastq.gz,3285_GCTACGCT-TAGATCGC_S105_L002_R1_001.fastq.gz,3285_GCTACGCT-CTAAGCCT_S189_L002_R1_001.fastq.gz,3285_CGAGGCTG-AGAGTAGA_S142_L002_R1_001.fastq.gz,3285_CGAGGCTG-GTAAGGAG_S154_L002_R1_001.fastq.gz,3285_AAGAGGCA-TAGATCGC_S107_L002_R1_001.fastq.gz,3285_GGACTCCT-AAGGAGTA_S173_L002_R1_001.fastq.gz,3285_TAAGGCGA-CTAAGCCT_S181_L002_R1_001.fastq.gz,3285_TAAGGCGA-ACTGCATA_S157_L002_R1_001.fastq.gz,3285_GTAGAGGA-AGAGTAGA_S144_L002_R1_001.fastq.gz,3285_AGGCAGAA-CTCTCTAT_S111_L002_R1_001.fastq.gz,3285_CGTACTAG-TATCCTCT_S122_L002_R1_001.fastq.gz,3285_CTCTCTAC-GTAAGGAG_S151_L002_R1_001.fastq.gz,3285_CGTACTAG-CTAAGCCT_S182_L002_R1_001.fastq.gz,3285_TCCTGAGC-CTAAGCCT_S184_L002_R1_001.fastq.gz,3285_TAGGCATG-CTAAGCCT_S186_L002_R1_001.fastq.gz,3285_CAGAGAGG-AAGGAGTA_S176_L002_R1_001.fastq.gz,3285_TAGGCATG-GTAAGGAG_S150_L002_R1_001.fastq.gz,3285_TAAGGCGA-GTAAGGAG_S145_L002_R1_001.fastq.gz} /data/pradalab/mgomez/Diploria/curaçao/SRA_Submission_Folder_Dlab_Curacao_35_Ind/
+
+```
+
+
+Ok, count files moved, there should be 22 samples so 44 fastq files in total but there is only 20 (appears to be single end) and because run 3286 is not present 
+
+
+```{bash}
+$ ls -l SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285*.fastq.gz | wc -l
+20
+```
+
+
+Checking if data is single end as no R2 fastq file present
+
+```{bash}
+$ zcat SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_AAGAGGCA-TAGATCGC_S107_L002_R1_001.fastq.gz | head -n 4
+
+```
+
+```{bash}
+@K00337:304:HCKVCBBXY:2:1101:3072:1226 1:N:0:NAGAGGCA+NAGATCGC
+CNACAAGTAAACAATACAACCAAATCGCTTTTGGGGCTTCTGTAGCGTCGAACGAACTTAACAATATTTGCGCCACATCCGCGTCTGTTTTCATGCAGAGCGTGATTGTCTTTAAATTGCCGCTATCGAGGAAACAATTCATACAAGTAGA
++
+A#AFFJJJJJJJJJJJJJJJJJFFJJJJJFJJJJJJFJJJJJJJJJJJJJFJJJJJFJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJA<JJJJJJJJFJJJJFJAFA<JJFJJF<JJJJFJJJFFJJJJFFF<<
+```
+
+
+he header line from your gzipped FASTQ file shows that this is a paired-end read file, based on the presence of a 1 after the sequence identifier. Here's the relevant portion of the header:
+
+@K00337:304:HCKVCBBXY:2:1101:3072:1226 1:N:0:NAGAGGCA+NAGATCGC
+
+    The 1 indicates that this is the first read in the pair (i.e., R1).
+
+    The + sign in the header indicates the corresponding mate is likely to be found in the next file with R2 in the filename.
+
+Since the header includes 1, this indicates it's the first read (R1) of a paired-end sequence. Therefore, your library preparation is most likely paired-end.
+
+Now that you've confirmed the file is paired-end for R1, you would want to look for the corresponding R2 file (which should be similar in naming, ending in R2_001.fastq.gz).
+
+Let me know if you need further clarification or assistance with these files!
+
+
+Check for unique barcode combinations
+
+
+```{bash}
+$ ls -l snpsaurus/run_3285/3285_CAGAGAGG-TAGATCGC*.fastq.gz
+```
+
+
+So for now it seems that data would have been single sequenced so I'll move forward
+
+D_lab_04_sperm	TCCTGAGC-TAGATCGC	run_1287, run_1292
+D_lab_09_tissue	CAGAGAGG-TAGATCGC	run_1287, run_1292
+D_lab_10_tissue	GCTACGCT-TAGATCGC	run_1287, run_1292
+D_lab_11_tissue	CGAGGCTG-TAGATCGC	run_1287, run_1292
+D_lab_33_tissue	CGTACTAG-TATCCTCT	run_1287, run_1292
+D_lab_34_sperm	AGGCAGAA-TATCCTCT	run_1287, run_1292
+D_lab_36_tissue	GGACTCCT-TATCCTCT	run_1287, run_1292
+D_lab_37_tissue	TAGGCATG-TATCCTCT	run_1287, run_1292
+D_lab_A__tissue	GCTACGCT-TATCCTCT	run_1287, run_1292
+D_lab_C_sperm	CGAGGCTG-TATCCTCT	run_1287, run_1292
+D_lab_E__sperm	AAGAGGCA-TATCCTCT	run_1287, run_1292
+D_lab_UK_1_sperm	TAAGGCGA-AGAGTAGA	run_1287, run_1292
+D_lab_UK_6_sperm	GGACTCCT-AGAGTAGA	run_1287, run_1292
+
+
+```{bash}
+cp snpsaurus/1287/1287_TCCTGAGC-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_CAGAGAGG-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_GCTACGCT-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_CGAGGCTG-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_CGTACTAG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_AGGCAGAA-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_GGACTCCT-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_TAGGCATG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_GCTACGCT-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_CGAGGCTG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_AAGAGGCA-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_TAAGGCGA-AGAGTAGA*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1287/1287_GGACTCCT-AGAGTAGA*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+```
+
+so 13 files copy from run 1287
+
+now do the same for run 1292
+
+
+```{bash}
+cp snpsaurus/1292/1292_TCCTGAGC-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_CAGAGAGG-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_GCTACGCT-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_CGAGGCTG-TAGATCGC*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_CGTACTAG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_AGGCAGAA-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_GGACTCCT-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_TAGGCATG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_GCTACGCT-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_CGAGGCTG-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_AAGAGGCA-TATCCTCT*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_TAAGGCGA-AGAGTAGA*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cp snpsaurus/1292/1292_GGACTCCT-AGAGTAGA*fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+```
+
+
+so 13 files copy from run 1292
+
+
+Now, merge those fastq corresponding to these 13 samples
+
+```{bash}
+$ cd SRA_Submission_Folder_Dlab_Curacao_35_Ind/
+```
+
+
+```{bash}
+cat 1287_AAGAGGCA-TATCCTCT_S59_L005_R1_001.fastq.gz 1292_AAGAGGCA-TATCCTCT_S253_L006_R1_001.fastq.gz > merged_AAGAGGCA-TATCCTCT_R1.fastq.gz
+cat 1287_CGTACTAG-TATCCTCT_S50_L005_R1_001.fastq.gz 1292_CGTACTAG-TATCCTCT_S244_L006_R1_001.fastq.gz > merged_CGTACTAG-TATCCTCT_R1.fastq.gz
+cat 1287_TAAGGCGA-AGAGTAGA_S61_L005_R1_001.fastq.gz 1292_TAAGGCGA-AGAGTAGA_S255_L006_R1_001.fastq.gz > merged_TAAGGCGA-AGAGTAGA_R1.fastq.gz
+cat 1287_AGGCAGAA-TATCCTCT_S51_L005_R1_001.fastq.gz 1292_AGGCAGAA-TATCCTCT_S245_L006_R1_001.fastq.gz > merged_AGGCAGAA-TATCCTCT_R1.fastq.gz
+cat 1287_GCTACGCT-TAGATCGC_S33_L005_R1_001.fastq.gz 1292_GCTACGCT-TAGATCGC_S227_L006_R1_001.fastq.gz > merged_GCTACGCT-TAGATCGC_R1.fastq.gz
+cat 1287_TAGGCATG-TATCCTCT_S54_L005_R1_001.fastq.gz 1292_TAGGCATG-TATCCTCT_S248_L006_R1_001.fastq.gz > merged_TAGGCATG-TATCCTCT_R1.fastq.gz
+cat 1287_CAGAGAGG-TAGATCGC_S32_L005_R1_001.fastq.gz 1292_CAGAGAGG-TAGATCGC_S226_L006_R1_001.fastq.gz > merged_CAGAGAGG-TAGATCGC_R1.fastq.gz
+cat 1287_GCTACGCT-TATCCTCT_S57_L005_R1_001.fastq.gz 1292_GCTACGCT-TATCCTCT_S251_L006_R1_001.fastq.gz > merged_GCTACGCT-TATCCTCT_R1.fastq.gz
+cat 1287_TCCTGAGC-TAGATCGC_S28_L005_R1_001.fastq.gz 1292_TCCTGAGC-TAGATCGC_S222_L006_R1_001.fastq.gz > merged_TCCTGAGC-TAGATCGC_R1.fastq.gz
+cat 1287_CGAGGCTG-TAGATCGC_S34_L005_R1_001.fastq.gz 1292_CGAGGCTG-TAGATCGC_S228_L006_R1_001.fastq.gz > merged_CGAGGCTG-TAGATCGC_R1.fastq.gz
+cat 1287_GGACTCCT-AGAGTAGA_S65_L005_R1_001.fastq.gz 1292_GGACTCCT-AGAGTAGA_S259_L006_R1_001.fastq.gz > merged_GGACTCCT-AGAGTAGA_R1.fastq.gz
+cat 1287_CGAGGCTG-TATCCTCT_S58_L005_R1_001.fastq.gz 1292_CGAGGCTG-TATCCTCT_S252_L006_R1_001.fastq.gz > merged_CGAGGCTG-TATCCTCT_R1.fastq.gz
+cat 1287_GGACTCCT-TATCCTCT_S53_L005_R1_001.fastq.gz 1292_GGACTCCT-TATCCTCT_S247_L006_R1_001.fastq.gz > merged_GGACTCCT-TATCCTCT_R1.fastq.gz
+
+```
+    
+
+count merged files
+
+```{bash}
+$ ls merged*fastq.gz | wc -l
+13
+```
+
+Alos, since i dont have access to run 3286 where samples 440_dip	AAGAGGCA-CTAAGCCT	 462_dip	CATACGTA-CTAAGCCT	came from, i'm going to add these samples from
+
+run 1287 and 1292
+
+sample 440 is Dlab colony 40 and 462 is Dlab 12 but only D_lab_12_tissue	AAGAGGCA-TAGATCGC	run_1287, run_1292 was sequenced in 1287 and 1292
+
+```{bash}
+$ cp snpsaurus/1287/1287_AAGAGGCA-TAGATCGC_S35_L005_R1_001.fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+$ cp snpsaurus/1292/1292_AAGAGGCA-TAGATCGC_S229_L006_R1_001.fastq.gz SRA_Submission_Folder_Dlab_Curacao_35_Ind
+```
+ and merge them
+ 
+```{bash}
+$ cd SRA_Submission_Folder_Dlab_Curacao_35_Ind
+cat 1287_AAGAGGCA-TAGATCGC_S35_L005_R1_001.fastq.gz 1292_AAGAGGCA-TAGATCGC_S229_L006_R1_001.fastq.gz  > merged_AAGAGGCA-TAGATCGC_R1.fastq.gz
+```
+ 
+
+
+
+
