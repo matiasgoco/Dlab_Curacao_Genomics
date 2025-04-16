@@ -791,7 +791,219 @@ $ cd SRA_Submission_Folder_Dlab_Curacao_35_Ind
 cat 1287_AAGAGGCA-TAGATCGC_S35_L005_R1_001.fastq.gz 1292_AAGAGGCA-TAGATCGC_S229_L006_R1_001.fastq.gz  > merged_AAGAGGCA-TAGATCGC_R1.fastq.gz
 ```
  
+```{bash}
+
+```
+
+
+Okay, some sample don't show up so checking and copying those missing
+
+```{bash}
+# 401_dip
+cp ../snpsaurus/run_3285/3285_CAGAGAGG-TAGATCGC_S104_L002_R1_001.fastq.gz .
+
+# 402_dip
+cp ../snpsaurus/run_3285/3285_CAGAGAGG-CTCTCTAT_S116_L002_R1_001.fastq.gz .
+
+# 403_dip
+
+cp ../snpsaurus/run_3285/3285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz .
+
+# 405_dip
+
+cp ../snpsaurus/run_3285/3285_CAGAGAGG-GTAAGGAG_S152_L002_R1_001.fastq.gz .
+
+# 408_dip
+
+cp ../snpsaurus/run_3285/3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz .
+
+# 413_dip 
+
+cp ../snpsaurus/run_3285/3285_GCTACGCT-CTCTCTAT_S117_L002_R1_001.fastq.gz .
+
+# 417_dip
+cp ../snpsaurus/run_3285/3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz .
+
+# 420_dip
+
+cp ../snpsaurus/run_3285/3285_GCTACGCT-AGAGTAGA_S141_L002_R1_001.fastq.gz .
+
+# 421_dip
+
+cp ../snpsaurus/run_3285/3285_GCTACGCT-GTAAGGAG_S153_L002_R1_001.fastq.gz .
+
+
+# 423_dip
+
+cp ../snpsaurus/run_3285/3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz .
+
+# 425_dip
+
+cp ../snpsaurus/run_3285/3285_CGAGGCTG-TAGATCGC_S106_L002_R1_001.fastq.gz .
+
+# 427_dip
+cp ../snpsaurus/run_3285/3285_CGAGGCTG-CTCTCTAT_S118_L002_R1_001.fastq.gz .
+
+# 430_dip
+
+cp ../snpsaurus/run_3285/3285_CGAGGCTG-TATCCTCT_S130_L002_R1_001.fastq.gz .
+
+# 435_dip
+
+cp ../snpsaurus/run_3285/3285_CGAGGCTG-ACTGCATA_S166_L002_R1_001.fastq.gz .
+
+# 438_dip
+
+cp ../snpsaurus/run_3285/3285_CGAGGCTG-CTAAGCCT_S190_L002_R1_001.fastq.gz .
+
+# 440_dip
+
+# not available because it was in run 3286
 
 
 
+```
 
+Oaky since the folder need to contain only those files to be transferd to NCBi i am making a new folder and move final files into this one
+
+```{bash}
+$ cd /data/pradalab/mgomez/Diploria/curaçao
+$ mkdir Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+```
+
+
+```{bash}
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-TAGATCGC_S104_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-CTCTCTAT_S116_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-GTAAGGAG_S152_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-AAGGAGTA_S176_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-CTCTCTAT_S117_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-AGAGTAGA_S141_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-GTAAGGAG_S153_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-ACTGCATA_S165_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.g Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-CTAAGCCT_S189_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-TAGATCGC_S106_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-CTCTCTAT_S118_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-TATCCTCT_S130_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-AGAGTAGA_S142_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-GTAAGGAG_S154_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-ACTGCATA_S166_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CGAGGCTG-CTAAGCCT_S190_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_AAGAGGCA-TAGATCGC_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_TCCTGAGC-TAGATCGC_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CAGAGAGG-TAGATCGC_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_GCTACGCT-TAGATCGC_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CGAGGCTG-TAGATCGC_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CGTACTAG-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_AGGCAGAA-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_GGACTCCT-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_TAGGCATG-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_GCTACGCT-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CGAGGCTG-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_AAGAGGCA-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_TAAGGCGA-AGAGTAGA_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_GGACTCCT-AGAGTAGA_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+```
+
+
+ only 28 files were moved so 6 missing to complete 34
+ 
+ 
+ Raw FASTQ:
+
+    3285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz
+
+    3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz
+
+    3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz ← double-check this one; previously it appeared as .fastq.g (incomplete extension)
+
+Merged FASTQ:
+
+    merged_GGACTCCT-AGAGTAGA_R1.fastq.gz
+
+    merged_AAGAGGCA-TATCCTCT_R1.fastq.gz
+
+    merged_GCTACGCT-TATCCTCT_R1.fastq.gz ← also missing from the current folder contents (was present in your reference list)
+    
+    
+```{bash}
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_CAGAGAGG-TATCCTCT_S128_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+cp snpsaurus/run_3285/3285_GCTACGCT-TATCCTCT_S129_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+mv SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_GGACTCCT-AGAGTAGA_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+cp SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_AAGAGGCA-TATCCTCT_R1.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+cp snpsaurus/run_3285/3285_GCTACGCT-AAGGAGTA_S177_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+```
+
+
+The missing files from your list are:
+
+    3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz
+
+    3285_CGAGGCTG-GTAAGGAG_S154_L002_R1_001.fastq.gz
+ 
+ 
+```{bash}
+cp snpsaurus/run_3285/3285_CAGAGAGG-CTAAGCCT_S188_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+
+cp snpsaurus/run_3285/3285_CGAGGCTG-GTAAGGAG_S154_L002_R1_001.fastq.gz Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+```
+ 
+ 
+```{bash}
+$  ls ../SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CAGAGAGG-TAGATCGC_R1.fastq.gz:
+ls: cannot access ../SRA_Submission_Folder_Dlab_Curacao_35_Ind/merged_CAGAGAGG-TAGATCGC_R1.fastq.gz:: No such file or directory
+
+ls merged_AAGAGGCA-TATCCTCT_R1.fastq.gz
+ls: cannot access merged_AAGAGGCA-TATCCTCT_R1.fastq.gz: No such file or directory
+```
+
+So need to merge from 
+ 
+ 
+```{bash}
+cat /data/pradalab/mgomez/Diploria/curaçao/snpsaurus/1287/1287_CAGAGAGG-TAGATCGC_S32_L005_R1_001.fastq.gz /data/pradalab/mgomez/Diploria/curaçao/snpsaurus/1292/1292_CAGAGAGG-TAGATCGC_S226_L006_R1_001.fastq.gz > Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind/merged_CAGAGAGG-TAGATCGC_R1.fastq.gz 
+```
+ 
+
+```{bash}
+cat /data/pradalab/mgomez/Diploria/curaçao/snpsaurus/1287/1287_AAGAGGCA-TATCCTCT_S59_L005_R1_001.fastq.gz /data/pradalab/mgomez/Diploria/curaçao/snpsaurus/1292/1292_AAGAGGCA-TATCCTCT_S253_L006_R1_001.fastq.gz > /data/pradalab/mgomez/Diploria/curaçao/Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind/merged_AAGAGGCA-TATCCTCT_R1.fastq.gz 
+```
+
+ 
+okay now we're good,  
+
+
+First, in your terminal make sure you can access your files. Go to that directory. If there are other files not being uploaded, either remove them or create a new directory that only contains the sequence files you are going to upload.
+
+Load Aspera modules
+
+```{bash}
+module load Aspera-Connect/3.9.6
+```
+
+```{bash}
+$ cd /data/pradalab/mgomez/Diploria/curaçao/Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind
+```
+
+While you are in the directory with your files, invoke the FTP process by typing:
+
+
+```{bash}
+$ ftp -i
+```
+
+It turned out that I was working in Andromeda and not unity but still the module loaded but it did not run the ftp -i command
+
+
+ended up downloading the folder Final_SRA_Submission_Folder_Dlab_Curacao_34_Ind to local laptop and upload them using drag and drop the files
