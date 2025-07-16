@@ -1,0 +1,2695 @@
+---
+title: "Dlab_Curacao_Genomics"
+author: "Matias Gomez-Corrales -- mgomezco@nova.edu"
+date: "11/8/2024"
+output: 
+   html_document:
+    theme: flatly
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+---
+
+***
+
+# About this document
+
+*** 
+
+All analyses were conducted in R (4.4.2, 2024-10-31). This markdown file outlines each step to assess genetic structure from genotyping analysis using custom SNPsaurus scripts to generate a VCF for the brain coral (*Diploria labyrinthiformis*) and two spawning populations in Curaçao (Southern Caribbean).
+
+If you have any issues or questions about the code please feel free to send an email to mgomezco@nova.edu
+
+*** 
+
+
+For the following analyses we will require the use of multiple different R packages, we can use the package *pacman* to quickly load them.
+
+```{r, load packages, include = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load("vcfR", "adegenet", "parallel", "ggplot2", "RColorBrewer", "hierfstat", "patchwork", "tidyverse", "poppr","boa","pcadapt","qvalue","Hmisc")
+```
+
+Set working dir in r
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+```
+
+
+```{bash eval=FALSE}
+cd /data/pradalab/mgomez/Diploria/curaçao/snp_filtering
+
+mkdir analysis_v2
+cd analysis_v2
+
+module load Anaconda3/5.3.0
+conda create -n diploria
+source activate diploria
+conda install -c bioconda samtools
+conda install -c bioconda vcftools
+conda install -c bioconda bcftools
+```
+
+
+## Get the raw vcf file from SNPsaurus
+
+```{bash  eval=FALSE}
+cp /data/pradalab/mgomez/Diploria/curaçao/snp_filtering/diploria2.vcf .
+```
+
+
+### First count the number of variants in the raw vcf with 68 samples
+
+
+```{bash  eval=FALSE}
+grep -v "#" diploria2.vcf | wc -l
+
+6527
+```
+
+
+### 6527 SNPs in 68 individuals.
+
+## Remove the colony 406 as it was a mislabeled individual. The original colony died after monitoring and no genomic data was colected for this individual.
+
+## Get the list of samples
+
+```{bash eval=FALSE }
+bcftools query -l diploria2.vcf
+
+439_dip_sorted
+440_dip_sorted
+462_dip_sorted
+401_dip_sorted
+410_dip_sorted
+425_dip_sorted
+402_dip_sorted
+413_dip_sorted
+427_dip_sorted
+403_dip_sorted
+417_dip_sorted
+430_dip_sorted
+404_dip_sorted
+420_dip_sorted
+431_dip_sorted
+405_dip_sorted
+421_dip_sorted
+432_dip_sorted
+406_dip_sorted
+422_dip_sorted
+435_dip_sorted
+407_dip_sorted
+423_dip_sorted
+437_dip_sorted
+408_dip_sorted
+424_dip_sorted
+438_dip_sorted
+D_lab_01_tissue_sorted
+D_lab_02_sperm_sorted
+D_lab_03_tissue_sorted
+D_lab_04_sperm_sorted
+D_lab_05_sperm_sorted
+D_lab_06_tissue_sorted
+D_lab_08_tissue_sorted
+D_lab_09_tissue_sorted
+D_lab_10_tissue_sorted
+D_lab_11_tissue_sorted
+D_lab_12_tissue_sorted
+D_lab_13_tissue_sorted
+D_lab_14_tissue_sorted
+D_lab_16_tissue_sorted
+D_lab_18_tissue_sorted
+D_lab_20_tissue_sorted
+D_lab_21_tissue_sorted
+D_lab_22_sperm_sorted
+D_lab_23_tissue_sorted
+D_lab_24_tissue_sorted
+D_lab_25_tissue_sorted
+D_lab_26_tissue_sorted
+D_lab_29_tissue_sorted
+D_lab_30_tissue_sorted
+D_lab_32_tissue_sorted
+D_lab_33_tissue_sorted
+D_lab_34_sperm_sorted
+D_lab_35_tissue_sorted
+D_lab_36_tissue_sorted
+D_lab_37_tissue_sorted
+D_lab_38_tissue_sorted
+D_lab_39_tissue_sorted
+D_lab_A__tissue_sorted
+D_lab_C_sperm_sorted
+D_lab_E__sperm_sorted
+D_lab_K_sperm_sorted
+D_lab_UK_1_sperm_sorted
+D_lab_UK_2_sperm_sorted
+D_lab_UK_4_sperm_sorted
+D_lab_UK_5_sperm_sorted
+D_lab_UK_6_sperm_sorted
+```
+
+## Remove 406_dip_sorted
+
+
+```{bash  eval=FALSE}
+vcftools --vcf diploria2.vcf --remove-indv 406_dip_sorted --recode --recode-INFO-all --out diploria_raw
+```
+
+
+
+```{bash  eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2.vcf
+	--recode-INFO-all
+	--out diploria_raw
+	--recode
+	--remove-indv 406_dip_sorted
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Excluding individuals in 'exclude' list
+After filtering, kept 67 out of 68 Individuals
+Outputting VCF file...
+After filtering, kept 6527 out of a possible 6527 Sites
+Run Time = 9.00 seconds
+```
+
+
+## 6527 sites in 67 individuals 
+
+
+### First remove indels 
+
+
+```{bash  eval=FALSE}
+
+vcftools --vcf diploria_raw.recode.vcf --remove-indels --recode --recode-INFO-all --out diploria_raw_SNPs
+
+```
+
+
+
+```{bash  eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria_raw.recode.vcf
+	--recode-INFO-all
+	--out diploria_raw_SNPs
+	--recode
+	--remove-indels
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5998 out of a possible 6527 Sites
+Run Time = 10.00 seconds
+```
+
+
+## 5998 SNPs in 67 ind
+
+###  Keep biallelic SNPs only
+
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria_raw_SNPs.recode.vcf --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all --out diploria_SNPs_2alleles
+
+```
+
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria_raw_SNPs.recode.vcf
+	--recode-INFO-all
+	--max-alleles 2
+	--min-alleles 2
+	--out diploria_SNPs_2alleles
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5998 out of a possible 5998 Sites
+Run Time = 8.00 seconds
+```
+
+### 5998 SNPs in 67 ind
+
+### Now keep SNPs that have a minimum quality score of 30 phreds
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria_SNPs_2alleles.recode.vcf --minQ 30 --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred
+
+
+```
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria_SNPs_2alleles.recode.vcf
+	--recode-INFO-all
+	--minQ 30
+	--out diploria2_SNPs_2alleles_30phred
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5772 out of a possible 5998 Sites
+Run Time = 7.00 seconds
+
+
+```
+
+
+
+### 5772 SNPs in 67 ind
+
+##Now keep loci with a minimum mean depth of 30x
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred.recode.vcf --min-meanDP 30 --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x
+
+```
+
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred.recode.vcf
+	--recode-INFO-all
+	--min-meanDP 30
+	--out diploria2_SNPs_2alleles_30phred_30x
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5522 out of a possible 5772 Sites
+Run Time = 6.00 seconds
+
+```
+
+
+## 5522 SNPs in 67 ind
+
+### Now keep variants that have only been successfully genotyped in 50% of individuals
+
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x.recode.vcf --max-missing 0.5 --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgeno
+
+
+```
+
+
+```{bash eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x.recode.vcf
+	--recode-INFO-all
+	--max-missing 0.5
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgeno
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5301 out of a possible 5522 Sites
+Run Time = 10.00 seconds
+
+
+```
+
+
+### 5301 SNPs in 67 ind
+
+
+##The next step is to get rid of individuals that did not sequence well. We can do this by assessing individual levels of missing data. (See http://www.ddocent.com/filtering/)
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgeno.recode.vcf --missing-indv
+
+
+```
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgeno.recode.vcf
+	--missing-indv
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 67 out of 67 Individuals
+Outputting Individual Missingness
+After filtering, kept 5301 out of a possible 5301 Sites
+Run Time = 1.00 seconds
+```
+
+
+
+##This will create an output called out.imiss. Let’s examine it. The N_MISS column is the number of sites the individual does not have any data for. The F_MISS column is the frequency of missing data for that individual (N_MISS / TOTAL SITES).
+
+
+```{bash eval=FALSE}
+cat out.imiss
+
+INDV	N_DATA	N_GENOTYPES_FILTERED	N_MISS	F_MISS
+439_dip_sorted	5301	0	5272	0.994529
+440_dip_sorted	5301	0	165	0.0311262
+462_dip_sorted	5301	0	129	0.024335
+401_dip_sorted	5301	0	144	0.0271647
+410_dip_sorted	5301	0	870	0.16412
+425_dip_sorted	5301	0	1996	0.376533
+402_dip_sorted	5301	0	93	0.0175439
+413_dip_sorted	5301	0	425	0.0801736
+427_dip_sorted	5301	0	2296	0.433126
+403_dip_sorted	5301	0	150	0.0282965
+417_dip_sorted	5301	0	182	0.0343331
+430_dip_sorted	5301	0	1127	0.212601
+404_dip_sorted	5301	0	5301	1
+420_dip_sorted	5301	0	714	0.134692
+431_dip_sorted	5301	0	204	0.0384833
+405_dip_sorted	5301	0	141	0.0265988
+421_dip_sorted	5301	0	239	0.0450858
+432_dip_sorted	5301	0	156	0.0294284
+422_dip_sorted	5301	0	164	0.0309376
+435_dip_sorted	5301	0	651	0.122807
+407_dip_sorted	5301	0	185	0.0348991
+423_dip_sorted	5301	0	158	0.0298057
+437_dip_sorted	5301	0	3340	0.63007
+408_dip_sorted	5301	0	1965	0.370685
+424_dip_sorted	5301	0	230	0.043388
+438_dip_sorted	5301	0	141	0.0265988
+D_lab_01_tissue_sorted	5301	0	5301	1
+D_lab_02_sperm_sorted	5301	0	819	0.154499
+D_lab_03_tissue_sorted	5301	0	2357	0.444633
+D_lab_04_sperm_sorted	5301	0	195	0.0367855
+D_lab_05_sperm_sorted	5301	0	155	0.0292398
+D_lab_06_tissue_sorted	5301	0	5301	1
+D_lab_08_tissue_sorted	5301	0	4017	0.757782
+D_lab_09_tissue_sorted	5301	0	166	0.0313148
+D_lab_10_tissue_sorted	5301	0	197	0.0371628
+D_lab_11_tissue_sorted	5301	0	237	0.0447085
+D_lab_12_tissue_sorted	5301	0	5033	0.949444
+D_lab_13_tissue_sorted	5301	0	2204	0.415771
+D_lab_14_tissue_sorted	5301	0	5301	1
+D_lab_16_tissue_sorted	5301	0	5292	0.998302
+D_lab_18_tissue_sorted	5301	0	5185	0.978117
+D_lab_20_tissue_sorted	5301	0	579	0.109225
+D_lab_21_tissue_sorted	5301	0	5301	1
+D_lab_22_sperm_sorted	5301	0	176	0.0332013
+D_lab_23_tissue_sorted	5301	0	5301	1
+D_lab_24_tissue_sorted	5301	0	5301	1
+D_lab_25_tissue_sorted	5301	0	5301	1
+D_lab_26_tissue_sorted	5301	0	5301	1
+D_lab_29_tissue_sorted	5301	0	5122	0.966233
+D_lab_30_tissue_sorted	5301	0	5301	1
+D_lab_32_tissue_sorted	5301	0	5179	0.976985
+D_lab_33_tissue_sorted	5301	0	943	0.177891
+D_lab_34_sperm_sorted	5301	0	190	0.0358423
+D_lab_35_tissue_sorted	5301	0	5282	0.996416
+D_lab_36_tissue_sorted	5301	0	2494	0.470477
+D_lab_37_tissue_sorted	5301	0	228	0.0430108
+D_lab_38_tissue_sorted	5301	0	291	0.0548953
+D_lab_39_tissue_sorted	5301	0	3574	0.674212
+D_lab_A__tissue_sorted	5301	0	601	0.113375
+D_lab_C_sperm_sorted	5301	0	347	0.0654593
+D_lab_E__sperm_sorted	5301	0	2110	0.398038
+D_lab_K_sperm_sorted	5301	0	189	0.0356537
+D_lab_UK_1_sperm_sorted	5301	0	199	0.0375401
+D_lab_UK_2_sperm_sorted	5301	0	5087	0.95963
+D_lab_UK_4_sperm_sorted	5301	0	4216	0.795322
+D_lab_UK_5_sperm_sorted	5301	0	127	0.0239577
+D_lab_UK_6_sperm_sorted	5301	0	152	0.0286738
+```
+
+## Let’s take a look at a histogram
+```{bash eval=FALSE}
+conda install -c bioconda mawk
+```
+
+```{bash eval=FALSE}
+
+mawk '!/IN/' out.imiss | cut -f5 > totalmissing
+gnuplot << \EOF 
+set terminal dumb size 120, 30
+set autoscale 
+unset label
+set title "Histogram of % missing data per individual"
+set ylabel "Number of Occurrences"
+set xlabel "% of missing data"
+#set yr [0:100000]
+binwidth=0.01
+bin(x,width)=width*floor(x/width) + binwidth/2.0
+plot 'totalmissing' using (bin($1,binwidth)):(1.0) smooth freq with boxes
+pause -1
+EOF
+
+
+
+```
+
+
+
+```{bash eval=FALSE}
+                                         Histogram of % missing data per individual
+  Number of Occurrences
+    12 ++-**-----+---------+---------+---------+---------+---------+---------+---------+---------+---------+--------++
+       +  **     +         +         +         +         +      'totalmissing' using (bin($1,binwidth)):(1.0) ****** +
+       |  **                                                                                                         |
+       |  **                                                                                                         |
+    10 ++***                                                                                               **       ++
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+     8 ++***                                                                                               **       ++
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+     6 ++***                                                                                               **       ++
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+       | ***                                                                                               **        |
+     4 ++****                                                                                              **       ++
+       | ****                                                                                              **        |
+       | ****                                                                                            ****        |
+       | ****                                                                                            * **        |
+     2 ++****                       **********                                                          ** **       ++
+       | ****                       *        *                                                          ** **        |
+       |*****************************        ************************************************************* **        |
+       +****** * **** *** *+        *+       * +* ** *   +     *   +     *   + *    *  +      *  +    **** **        +
+     0 +*****************************************************************************************************-------++
+       0        0.1       0.2       0.3       0.4       0.5       0.6       0.7       0.8       0.9        1        1.1
+                                                      % of missing data
+```
+
+
+
+
+## We see that various individuals have as high as 100% missing data.
+
+## Now we create a list of individuals with more than 50% missing data
+
+```{bash eval=FALSE}
+mawk '$5 > 0.5' out.imiss | cut -f1 > lowDP.indv
+```
+
+#Now that we have a list of individuals to remove, we can feed that directly into VCFtools for filtering.
+```{bash eval=FALSE}
+cat lowDP.indv | wc -l
+
+23
+
+
+cat lowDP.indv 
+
+
+439_dip_sorted
+404_dip_sorted
+437_dip_sorted
+D_lab_01_tissue_sorted
+D_lab_06_tissue_sorted
+D_lab_08_tissue_sorted
+D_lab_12_tissue_sorted
+D_lab_14_tissue_sorted
+D_lab_16_tissue_sorted
+D_lab_18_tissue_sorted
+D_lab_21_tissue_sorted
+D_lab_23_tissue_sorted
+D_lab_24_tissue_sorted
+D_lab_25_tissue_sorted
+D_lab_26_tissue_sorted
+D_lab_29_tissue_sorted
+D_lab_30_tissue_sorted
+D_lab_32_tissue_sorted
+D_lab_35_tissue_sorted
+D_lab_39_tissue_sorted
+D_lab_UK_2_sperm_sorted
+D_lab_UK_4_sperm_sorted
+
+
+```
+
+## Now that we have a list of individuals to remove, we can feed that directly into VCFtools for filtering
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgeno.recode.vcf --remove lowDP.indv --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind
+
+```
+
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgeno.recode.vcf
+	--remove lowDP.indv
+	--recode-INFO-all
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Excluding individuals in 'exclude' list
+After filtering, kept 45 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 45 out of 67 Individuals
+Outputting VCF file...
+After filtering, kept 5301 out of a possible 5301 Sites
+Run Time = 9.00 seconds
+```
+
+## 5301 SNPs in 45 individuals
+
+## Identify clones and remove them from the VCF file. Note that by having tecnical replicates we can ascertain whether or not the clone identification process is accurate
+
+
+```{r}
+library(vcfR)
+
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf<-read.vcfR("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf")
+
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf
+
+
+```
+
+## Now transform vcf to a genind object
+
+```{r}
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind <- vcfR2genind(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf)
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind
+```
+
+## Get distance statistics for all individuals in this genind object
+
+```{r}
+library(poppr)
+
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind_stats<-filter_stats(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind, distance = bitwise.dist, threshold = 1e+06 +.Machine$double.eps^0.5, 
+             stats = "All", missing = "ignore",plot = TRUE,cols = NULL, hist = "scott")
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind_stats
+```
+
+
+
+
+## Get geentic distance cutoffs' predictions by three methods: farthest, nearest, and average distances. Here all three methods agree on the cutoff
+
+```{r}
+
+print(farthest_thresh <- cutoff_predictor(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind_stats$farthest$THRESHOLDS))
+
+print(nearest_thresh <- cutoff_predictor(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind_stats$nearest$THRESHOLDS))
+
+print(average_thresh <- cutoff_predictor(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind_stats$average$THRESHOLDS))
+
+```
+
+## Transfor gennind to a genind clone object
+
+```{r}
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone<- as.genclone(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind)
+
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone
+
+```
+
+
+## Assign this cutoff genetic distance to observe the individulas identified as clone
+
+```{r}
+mlg.filter(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone, distance = "bitwise.dist", algorithm = "nearest_neighbor")<-0.04263347
+
+```
+
+
+```{r}
+
+mlg.table(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone)
+
+```
+
+
+## Get the list of Multi locus lineages 
+```{r}
+mll(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone)
+
+```
+
+## Get the list of individuals according to their MLG
+
+```{r}
+mlg.id(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind.genclone)
+```
+
+## Re do the previous graph using 36 unique genotypes
+
+```{r}
+library(poppr)
+
+filter_stats(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind, distance = bitwise.dist, threshold = 1e+06 +.Machine$double.eps^0.5, 
+             stats = "All", missing = "ignore",plot = TRUE,cols = NULL, hist = "scott", nclone = 36)
+filter_stats(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.genind, distance = bitwise.dist, threshold = 1e+06 +.Machine$double.eps^0.5, 
+             stats = "All", missing = "ignore",plot = TRUE,cols = NULL, hist = "scott", nclone = 35)
+```
+
+
+## Remove technical replicates plus the colonies identified as potential clones. Keep the individuals with the least missing data.
+
+```{bash eval=FALSE}
+nano clonal_colonies_2remove.txt
+
+D_lab_38_tissue_sorted
+D_lab_05_sperm_sorted
+D_lab_22_sperm_sorted
+D_lab_02_sperm_sorted
+D_lab_UK_5_sperm_sorted
+410_dip_sorted
+D_lab_13_tissue_sorted
+D_lab_03_tissue_sorted
+D_lab_K_sperm_sorted
+
+
+```
+
+
+
+# Now that we have a list of individuals to remove, we can feed that directly into VCFtools for filtering
+
+```{bash  eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf --remove clonal_colonies_2remove.txt --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones
+
+
+```
+
+
+```{bash  eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf
+	--remove clonal_colonies_2remove.txt
+	--recode-INFO-all
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Excluding individuals in 'exclude' list
+After filtering, kept 36 out of 45 Individuals
+Outputting VCF file...
+After filtering, kept 5301 out of a possible 5301 Sites
+Run Time = 9.00 seconds
+
+
+```
+
+
+## 5301 SNPs in 36 ind
+
+
+## Now identify potential loci under stron natural selection
+
+##### Outlier loci analyses to be run here 
+
+## BAYESCAN
+
+## To transform the vcf file to bayescan format we need a text file with some information about our vcf file. Copy this file I already prepared for a vcf
+## Make sure you do this for the vcf file without thinning (we want to scan all SNPs no matter how close they are to each other) and without maf because we don`t want to leave any SNP out no matter the allele frequency of the minor allele.
+
+```{bash eval=FALSE}
+cd /data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2
+mkdir outliers
+cd outliers
+
+ln -s ../diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf .
+
+
+```
+
+
+## Convert the VCF file to BayeScan format using pgdspider 
+## Log in to Bluewaves, copy PGDSpider to your working directory 
+
+
+```{bash eval=FALSE}
+cp -r /data/pradalab/mgomez/pr_cline/outliers/PGDSpider_2.1.1.5 .
+
+```
+
+## Make a txt file with the putative population grouping of each colony the be fed to PGDspider for file format conversion 
+
+## Notice that in this file the sample 432 was assigned as Autumn spawners beased on the clustering methods and as not to have a colony with a unique popo group.
+
+```{bash eval=FALSE}
+bcftools query -l diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf
+
+440_dip_sorted 
+462_dip_sorted
+401_dip_sorted
+425_dip_sorted
+402_dip_sorted
+413_dip_sorted
+427_dip_sorted
+403_dip_sorted
+417_dip_sorted
+430_dip_sorted
+420_dip_sorted
+431_dip_sorted
+405_dip_sorted
+421_dip_sorted
+432_dip_sorted
+422_dip_sorted
+435_dip_sorted
+407_dip_sorted
+423_dip_sorted
+408_dip_sorted
+424_dip_sorted
+438_dip_sorted
+D_lab_04_sperm_sorted
+D_lab_09_tissue_sorted
+D_lab_10_tissue_sorted
+D_lab_11_tissue_sorted
+D_lab_20_tissue_sorted
+D_lab_33_tissue_sorted
+D_lab_34_sperm_sorted
+D_lab_36_tissue_sorted
+D_lab_37_tissue_sorted
+D_lab_A__tissue_sorted
+D_lab_C_sperm_sorted
+D_lab_E__sperm_sorted
+D_lab_UK_1_sperm_sorted
+D_lab_UK_6_sperm_sorted
+```
+
+
+
+```{bash eval=FALSE}
+nano diploria_pop.txt
+
+440_dip_sorted Autumn
+462_dip_sorted Spring
+401_dip_sorted Spring
+425_dip_sorted Unknown
+402_dip_sorted Spring
+413_dip_sorted Spring
+427_dip_sorted Unknown
+403_dip_sorted Autumn
+417_dip_sorted Spring
+430_dip_sorted Autumn
+420_dip_sorted Spring
+431_dip_sorted Autumn
+405_dip_sorted Spring
+421_dip_sorted Spring
+432_dip_sorted Both
+422_dip_sorted Spring
+435_dip_sorted Spring
+407_dip_sorted Unknown
+423_dip_sorted Unknown
+408_dip_sorted Spring
+424_dip_sorted Autumn
+438_dip_sorted Spring
+D_lab_04_sperm_sorted Autumn
+D_lab_09_tissue_sorted Unknown
+D_lab_10_tissue_sorted Spring
+D_lab_11_tissue_sorted Unknown
+D_lab_20_tissue_sorted Spring
+D_lab_33_tissue_sorted Spring
+D_lab_34_sperm_sorted Spring
+D_lab_36_tissue_sorted Spring
+D_lab_37_tissue_sorted Unknown
+D_lab_A__tissue_sorted Autumn
+D_lab_C_sperm_sorted Autumn
+D_lab_E__sperm_sorted Autumn
+D_lab_UK_1_sperm_sorted Spring
+D_lab_UK_6_sperm_sorted Spring
+
+```
+
+
+
+## Make the file needed by PGDspider
+
+```{bash eval=FALSE}
+nano BSsnp_spid.txt
+
+# VCF Parser questions
+PARSER_FORMAT=VCF
+
+# Only output SNPs with a phred-scaled quality of at least:
+VCF_PARSER_QUAL_QUESTION=
+# Select population definition file:
+VCF_PARSER_POP_FILE_QUESTION=/data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/outliers/diploria_pop.txt
+# What is the ploidy of the data?
+VCF_PARSER_PLOIDY_QUESTION=DIPLOID
+# Do you want to include a file with population definitions?
+VCF_PARSER_POP_QUESTION=true
+# Output genotypes as missing if the phred-scale genotype quality is below:
+VCF_PARSER_GTQUAL_QUESTION=
+# Do you want to include non-polymorphic SNPs?
+VCF_PARSER_MONOMORPHIC_QUESTION=false
+# Only output following individuals (ind1, ind2, ind4, ...):
+VCF_PARSER_IND_QUESTION=
+# Only input following regions (refSeqName:start:end, multiple regions: whitespace separated):
+VCF_PARSER_REGION_QUESTION=
+# Output genotypes as missing if the read depth of a position for the sample is below:
+VCF_PARSER_READ_QUESTION=
+# Take most likely genotype if "PL" or "GL" is given in the genotype field?
+VCF_PARSER_PL_QUESTION=false
+# Do you want to exclude loci with only missing data?
+VCF_PARSER_EXC_MISSING_LOCI_QUESTION=false
+
+# GESTE / BayeScan Writer questions
+WRITER_FORMAT=GESTE_BAYE_SCAN
+
+# Specify which data type should be included in the GESTE / BayeScan file  (GESTE / BayeScan can only analyze one data type per file):
+GESTE_BAYE_SCAN_WRITER_DATA_TYPE_QUESTION=SNP
+```
+
+## transform vcf to bayescan format with PGDspider
+
+```{bash eval=FALSE}
+
+java -jar PGDSpider_2.1.1.5/PGDSpider2-cli.jar -inputfile diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf -outputfile diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan -spid BSsnp_spid.txt
+
+
+WARN  22:34:50 - PGDSpider configuration file not found! Loading default configuration.
+initialize convert process...
+read input file...
+read input file done.
+write output file...
+write output file done.
+
+```
+
+
+## Once we have the new file we can run Bayescan to scan the data for loci likely to be under strong natural selection
+
+
+## First, we need to make our script to submit it to the bluewaves` queue. I used "nano" to make this script 
+
+```{bash eval=FALSE}
+nano diploria_bayescan.sh 
+```
+
+## then copy the folowing to the file vcf2bayes.sh and exit with ctrl x and say yes to save the changes. Change my email for yours
+
+```{bash eval=FALSE}
+
+#!/bin/bash
+#SBATCH -t 300:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --mail-type=BEGIN  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=END  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=FAIL  --mail-user=matias_gomez@uri.edu
+cd $SLURM_SUBMIT_DIR
+module load BayeScan/2.1-foss-2016b 
+bayescan_2.1 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan -o diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out put -n 5000 -thin 10 -nbp 20 -pilot 5000 -burn 50000 -pr_odds 100 -threads 20
+
+
+```
+
+## Finally, submit your job 
+
+```{bash eval=FALSE}
+sbatch --mem=250GB diploria_bayescan.sh
+
+Submitted batch job 1904353
+
+```
+
+
+## Copy this R code file to your working directory
+
+```{bash eval=FALSE}
+cp /data/pradalab/mgomez/brevolium/bayescan/plot_R.r .
+```
+
+
+## We need to download the output files and the R code to work in R 
+
+```{bash eval=FALSE}
+scp -p matias_gomez@bluewaves.uri.edu:/data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/outliers/plot_R.r .
+
+scp -p matias_gomez@bluewaves.uri.edu:/data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/outliers/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out_fst.txt .
+
+scp -p matias_gomez@bluewaves.uri.edu:/data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/outliers/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out.sel .
+```
+
+## Now work in R
+
+```{r}
+source("plot_R.r")
+BayeScan_Results<-plot_bayescan("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out_fst.txt",FDR=0.05)
+BayeScan_Results$outliers
+BayeScan_Results$nb_outliers
+```
+
+```{r}
+BayeScan_Results_sel=read.table("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out.sel",colClasses="numeric")
+parameter="Fst1"
+plot(density(BayeScan_Results_sel[[parameter]]),xlab=parameter,main=paste(parameter,"posterior distribution"))
+
+parameter="logL"
+plot(density(BayeScan_Results_sel[[parameter]]),xlab=parameter,main=paste(parameter,"posterior distribution"))
+
+
+```
+
+
+```{r}
+BayeScan_Results_Fst=read.table("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.bayescan.out_fst.txt",colClasses="numeric")
+parameter="alpha"
+
+plot(density(BayeScan_Results_Fst[[parameter]]),xlab=parameter,main=paste(parameter,"posterior distribution"))
+```
+
+
+
+## Density Interval (HPDI) for your parameter of interest (example for the 95% interval):
+
+```{r}
+# install.packages("boa")
+library(boa)
+parameter="Fst1"
+boa.hpd(BayeScan_Results_sel[[parameter]],0.05)
+```
+
+## Now, save the outlier loci in txt file
+
+```{r}
+# write.table(BayeScan_Results$outliers, file ="Diploria_outliers_bayescan.txt", row.names = FALSE, col.names = FALSE)
+
+```
+
+
+
+## PCADAPT 
+## Also see https://bcm-uga.github.io/pcadapt/articles/pcadapt.html
+
+
+```{r}
+## install.packages("pcadapt")
+library(pcadapt)
+```
+
+## The pcadapt function performs two successive tasks. First, PCA is performed on the centered and scaled genotype matrix. The second stage consists in computing test statistics and p-values based on the correlations between SNPs and the first K principal components (PCs). 
+
+## Use with the same vcf you used for Bayescan. Convert the vcf to pcadapt format
+
+
+```{r}
+library(pcadapt)
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf <- read.pcadapt("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf", type = "vcf",allele.sep =c("/", "|") )
+
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf
+```
+
+
+## To run the function pcadapt, the user should specify the output returned by the function read.pcadapt and the number K of principal components to compute. To choose K, principal component analysis should first be performed with a large enough number of principal components (e.g. K=20).
+
+```{r}
+x <- pcadapt(input = diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf, K=20)
+plot(x, option= "screeplot")
+```
+
+
+```{r}
+class(x)
+head(x$af)
+```
+
+
+## Plot the PCA graph
+
+```{r}
+plot(x, option= "scores")
+```
+
+## Plot the PC4 vs PC3, think about what we are doing here and why the graphs look different (The scree plot is the key). So far this is the same we did before. Plot different PC and see what happens.
+
+```{r}
+plot(x, option = "scores", i = 3, j = 4)
+```
+
+## A Manhattan plot displays −log10 of the p-values. Here we can see those SNPs that are highly differentiated (outliers) from the rest of SNPs.
+
+## http://membres-timc.imag.fr/Michael.Blum/PCAdapt/pcadapt_markdown.html
+### By default, Manhattan plot displays p-values (on a log-scale) of the genetic markers. The argument threshold indicates the false discovery rate. If the argument threshold is specified, an horizontal bar indicates the corresponding threshold for p-values. If it is not specified, no horizontal bar is shown.
+
+
+```{r}
+K <- 2 # Index of the principal component the user is interested in
+plot(x, option = "manhattan", K=2, threshold = 0.20)
+```
+
+## D.2. Q-Q Plot
+
+## The user can also check the expected uniform distribution of the p-values using a Q-Q plot
+```{r}
+plot(x, option = "qqplot", K=2,threshold=0.1)
+```
+
+
+## D.3. Histograms of the test statistic and of the p-values. Pay attention to the distribution of p-values, where are the outliers?
+
+```{r}
+hist(x$pvalues, xlab = "p-values", main = NULL, breaks = 50, col = "orange")
+```
+
+## The presence of outliers is also visible when plotting a histogram of the test statistic 𝐷𝑗.
+
+```{r}
+plot(x, option = "stat.distribution")
+```
+
+
+## Choosing a cutoff for outlier detection
+
+## To provide a list of outliers and choose a cutoff for outlier detection, there are several methods that are listed below from the less conservative one to the more conservative one.
+
+## Need to install bioconductor, go to https://www.bioconductor.org/install/ for instructions. Once installed, load required packages.
+
+
+```{r}
+# BiocManager::install("qvalue")
+library(qvalue)
+```
+
+## For a given 𝛼 (real valued number between 0 and 1), SNPs with q-values less than 𝛼 will be considered as outliers with an expected false discovery rate bounded by 𝛼. The false discovery rate is defined as the percentage of false discoveries among the list of candidate SNPs. Here is an example of how to provide a list of candidate SNPs for the geno3pops data, for an expected false discovery rate lower than 10%:
+
+## Actually for a 5% FDR
+```{r}
+library(qvalue)
+qval <- qvalue(x$pvalues)$qvalues
+alpha <- 0.05
+outliers_pcadapt <- which(qval < alpha)
+length(outliers_pcadapt)
+outliers_pcadapt
+```
+
+
+
+## First, we write the ouliers to a text file
+
+```{r eval=FALSE}
+# write.table(outliers_pcadapt, file ="Diploria_outliers_pcadapt.txt", row.names = FALSE, col.names = FALSE)
+```
+
+
+# Next, we make a file with all the SNPs in the vcf but ignoring the headers and extracting only the 1st, 2nd and 3rd column that have the CHROM, POS and ID labels. Additionally, we add a column of numbers (equal to the number of SNPs in your file) to every loci.
+
+```{bash eval=FALSE}
+
+paste <(seq 1 5301) <(awk '!/#/' diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf | cut -f1,2) > diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.loci.txt
+
+```
+
+
+## We now compare the files Diploria_outliers_bayescan.txt and diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.loci.txt to have only those commun loci in each loci position and extract the fields 1, 2, and 3 to make a new file that we will use to filter the vcf file, if needed.
+
+# Helpful link: https://askubuntu.com/questions/879754/awk-comparing-2-columns-of-2-files-and-print-common-lines
+
+
+```{bash eval=FALSE}
+
+awk 'FNR==NR{a[$1];next}($1 in a){print}' Diploria_outliers_bayescan.txt diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.loci.txt | cut -f1,2,3 > bayescan_outlier_loci_ID.txt 
+
+
+```
+
+
+```{bash eval=FALSE}
+head bayescan_outlier_loci_ID.txt
+
+400	4754_5	96
+664	7232_36	28
+1578	16193_30	43
+2021	20082_168	95
+```
+
+
+
+## We now compare the files Diploria_outliers_pcadapt.txt and diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.loci.txt to have only those commun loci in each loci position and extract the fields 1, 2, and 3 to make a new file that we will use to filter the vcf file.
+
+# Helpful link: https://askubuntu.com/questions/879754/awk-comparing-2-columns-of-2-files-and-print-common-lines
+
+
+```{bash eval=FALSE}
+
+awk 'FNR==NR{a[$1];next}($1 in a){print}' Diploria_outliers_pcadapt.txt diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.loci.txt | cut -f1,2,3 > 
+
+pcadapt_outlier_loci_ID.txt 
+
+
+```
+
+
+```{bash eval=FALSE}
+head pcadapt_outlier_loci_ID.txt
+```
+
+
+```{bash eval=FALSE}
+5	181_60	93
+6	181_60	94
+27	504_15	29
+32	552_19	76
+35	566_5	109
+37	603_11	51
+38	603_11	60
+41	603_11	123
+42	649_9	41
+50	870_5	74
+```
+
+
+
+## Now that I have two files, both with the loci found by Bayescan and Pcadapt , I need to find the common loci between these two files.
+
+## Common outliers Bayescan and Pcadapt
+
+```{bash eval=F}
+
+awk 'FNR==NR{a[$1];next}($1 in a){print}' bayescan_outlier_loci_ID.txt pcadapt_outlier_loci_ID.txt  |cut -f1,2,3 > outliers_bayescan_pcadapt_ID.txt
+
+
+
+
+```
+
+```{bash eval=FALSE}
+wc -l outliers_bayescan_pcadapt_ID.txt
+cat outliers_bayescan_pcadapt_ID.txt 
+
+```
+
+
+
+## Remove loci under selection to keep a neutral-set of loci. Make a file with Chrom and Pos info to feed to vcftools and remove these loci.
+
+
+```{bash eval=FALSE}
+
+cd /data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/
+
+nano outliers_selection.txt
+
+4754_5	96
+7232_36	28
+16193_30	43
+20082_168	95
+
+```
+
+## Remove these loci to have only neutral SNPs for population genomic analyses
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf  --exclude-positions outliers_selection.txt  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral
+
+
+
+```
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf
+	--exclude-positions outliers_selection.txt
+	--recode-INFO-all
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 5297 out of a possible 5301 Sites
+Run Time = 5.00 seconds
+```
+
+## 5297 SNPs in 36 individuals
+
+## Now apply a Minor Allele Frequency filter of 5%
+
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral.recode.vcf  --maf 0.05  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05 
+
+
+```
+
+```{bash eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral.recode.vcf
+	--recode-INFO-all
+	--maf 0.05
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 4400 out of a possible 5297 Sites
+Run Time = 5.00 seconds
+
+
+```
+
+## 4400 in 36 ind
+
+
+## Let’s filter our SNPs by population specific HWE. Ideally we would like to filter per spawning population but since many colonies did not spawn we ignore what population they belong to. Therefore. I`m filtering out loci below 0.01 p-value
+
+```{basheval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05.recode.vcf  --hwe 0.01  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01 
+
+
+```
+
+
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05.recode.vcf
+	--recode-INFO-all
+	--max-alleles 2
+	--hwe 0.01
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 3857 out of a possible 4400 Sites
+Run Time = 6.00 seconds
+
+
+```
+
+
+## 3857 SNPs in 36 individuals
+
+## First thin the vcf to break up potential patterns of LD in the dataset
+
+## Apply an LD filter, keep a SNP per every 1000 pb
+
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01.recode.vcf --thin 1000  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000
+
+```
+
+
+```{bash eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01.recode.vcf
+	--recode-INFO-all
+	--thin 1000
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000
+	--recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 1481 out of a possible 3857 Sites
+Run Time = 4.00 seconds
+
+```
+
+
+## 1481 SNPs in 36 ind
+
+## We still have one individual duplicated (420 and Dlab_20) that was not identified as a clone despite being a technical replicate. I had kept those two individuals in all the previous analyses so far. However, since they did not do harm nor good to the overall results, I am deleting the sample 420, based on its percentage of missingness of 13% with respect to 10% of Dlab_420, for visual and statistical purposes from here on. In short, having that extra individual did not biased in any way the results and I state this here for transparency.
+
+## Remove sample 420 from diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf
+
+```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf --remove-indv D_lab_20_tissue_sorted --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind
+
+
+```
+
+```{bash eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf
+	--recode-INFO-all
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind
+	--recode
+	--remove-indv D_lab_20_tissue_sorted
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Excluding individuals in 'exclude' list
+After filtering, kept 35 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 1481 out of a possible 1481 Sites
+Run Time = 4.00 seconds
+
+```
+
+
+## 1481 SNPs in 35 ind
+
+## Run multivariate population genomic analyses 
+
+
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+library(vcfR)
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf <-read.vcfR("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf")
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf 
+```
+
+### PCA
+
+
+```{r}
+
+diploria.genlight <- vcfR2genlight(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf)
+
+diploria.genlight
+
+indNames(diploria.genlight)
+```
+
+
+
+
+```{r}
+
+library(adegenet)
+
+diploria.genlight.pca <- glPca(diploria.genlight, nf=2)
+
+diploria.genlight.pca
+
+```
+
+
+
+```{r}
+library(ggplot2)
+
+
+diploria.genlight.pca_scores <- as.data.frame(diploria.genlight.pca$scores)
+
+diploria.genlight.pca_scores
+
+set.seed(9)
+p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2))
+p <- p + geom_point(size=2)
+p <- p + geom_hline(yintercept = 0)
+p <- p + geom_vline(xintercept = 0)
+theme<-theme(panel.background = element_blank(),panel.border=element_rect(fill=NA),panel.grid.major =
+               element_blank(),panel.grid.minor = element_blank(),strip.background=element_blank(),
+             axis.text.x=element_text(colour="black"),axis.text.y=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),plot.margin=unit(c(1,1,1,1),"line"))
+p <- p +theme
+p
+```
+
+Variance explained by the PCs
+
+```{r}
+round(diploria.genlight.pca$eig/sum(diploria.genlight.pca$eig)*100, 2)
+```
+
+1st PC= 12.34% and 1nd PC=3.82  Variance
+
+
+```{r}
+diploria.genlight.pca$eig
+diploria.genlight.pca$scores
+```
+
+
+### Load pop info
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+pop_info <-read.table("diploria_pop_data_35ind.txt", header=TRUE)
+pop_info
+```
+
+
+## Assign pop data to genlight object
+
+```{r}
+pop(diploria.genlight)<- pop_info$Season
+
+pop(diploria.genlight)
+```
+
+
+```{r}
+pop <-pop(diploria.genlight)
+pop
+```
+
+
+
+## https://rdrr.io/cran/RColorBrewer/man/ColorBrewer.html
+
+## Manually assign colors to each season Autumn (#FF9833), Spring (#01B050), Unknown (#000000), and Both (#CC0099)
+
+```{r}
+cols_season <- (values=c( "#FF9833","#CC0099","#01B050","#000000"))
+cols_season
+```
+
+
+
+
+Changing colors
+
+## Manually assign colors to each season Autumn ("#ee7733"), Spring ("#009988"), Unknown ("#0077bb"), and Both ("#e53d69")
+
+Font: Aptos
+
+Color-blind friendly palette:
+Spring: Teal (0, 153, 136)
+Autumn: Orange (238, 119, 51)
+Both seasons: Magenta (229, 61, 105)
+Unknown: Blue (0, 119, 187)
+
+Border around all panels: Gray (213, 218, 219)
+
+```{r}
+cols_season <- (values=c( "#ee7733","#e53d69","#009988","#0077bb"))
+cols_season
+```
+
+
+
+```{r}
+library(ggplot2)
+
+set.seed(9)
+p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour =pop))
+p <- p + geom_point(size=12)
+p <- p + scale_color_manual(values = cols_season) 
+p <- p + geom_hline(yintercept = 0)
+p <- p + geom_vline(xintercept = 0)
+theme<-theme(panel.background = element_blank(),panel.border=element_rect(fill=NA),panel.grid.major =
+               element_blank(),panel.grid.minor = element_blank(),strip.background=element_blank(),
+             axis.text.x=element_text(colour="black"),axis.text.y=element_text(colour="black"),
+             axis.ticks=element_line(colour="black"),plot.margin=unit(c(1,1,1,1),"line"))
+Dlab_PCA <- p+ theme_test() + xlab("PC1 (12.3 %)") + ylab("PC2 (3.8 %)")+
+  labs(color = "Spawning Season") + theme(text = element_text(size = 25, face="plain"))
+Dlab_PCA
+```
+
+```{r}
+library(ggplot2)
+
+set.seed(9)
+p <- ggplot(diploria.genlight.pca_scores, aes(x=PC1, y=PC2, colour = pop)) +
+  geom_point(size=8) +
+  scale_color_manual(values = cols_season) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+
+# Custom theme for styling
+theme <- theme(panel.background = element_blank(),
+               panel.border = element_rect(fill=NA),
+               panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank(),
+               strip.background = element_blank(),
+               axis.text.x = element_text(colour = "black"),
+               axis.text.y = element_text(colour = "black"),
+               axis.ticks = element_line(colour = "black"),
+               plot.margin = unit(c(1, 1, 1, 1), "line"))
+
+# Create the PCA plot and position the legend in the center
+Dlab_PCA <- p + 
+  theme_test() + 
+  xlab("PC1 (12.3 %)") + 
+  ylab("PC2 (3.8 %)") + 
+  labs(color = "Spawning Season") + 
+  theme(text = element_text(size = 20, face = "plain"),
+        legend.position = c(0.5, 0.7),  # Center the legend
+        legend.justification = c(0.5, 0.5),   # Move legend further up (adjust Y-value)
+        legend.background = element_rect(fill = "white", color = "black")) # Optional: add background to legend
+
+# Print the plot
+Dlab_PCA
+```
+
+
+## DAPC
+
+##  We can further explore population assignments using a discriminant analysis of principal components (DAPC).
+## We first use find.cluster (cluster identification using successive K-means): These functions implement the clustering procedure used in Discriminant Analysis of Principal Components (DAPC, Jombart et al. 2010). This procedure consists in running successive K-means with an increasing number of clusters (k), after transforming data using a principal component anal- ysis (PCA). For each model, a statistical measure of goodness of fit (by default, BIC) is computed, which allows to choose the optimal k.
+
+
+```{r eval=FALSE}
+> find.clusters(diploria.genlight, max.n.clust = 8, n.pca = 35)
+Choose the number of clusters (>=2): 
+2
+$Kstat
+     K=1      K=2      K=3      K=4      K=5      K=6      K=7      K=8 
+163.8845 163.0004 165.2227 167.4641 169.6402 171.8147 173.9856 176.0739 
+
+$stat
+     K=2 
+163.0004 
+
+$grp
+         440_dip_sorted          462_dip_sorted          401_dip_sorted          425_dip_sorted 
+                      1                       2                       2                       2 
+         402_dip_sorted          413_dip_sorted          427_dip_sorted          403_dip_sorted 
+                      2                       2                       1                       1 
+         417_dip_sorted          430_dip_sorted          420_dip_sorted          431_dip_sorted 
+                      2                       1                       2                       1 
+         405_dip_sorted          421_dip_sorted          432_dip_sorted          422_dip_sorted 
+                      2                       2                       1                       2 
+         435_dip_sorted          407_dip_sorted          423_dip_sorted          408_dip_sorted 
+                      1                       2                       2                       2 
+         424_dip_sorted          438_dip_sorted   D_lab_04_sperm_sorted  D_lab_09_tissue_sorted 
+                      1                       2                       1                       2 
+ D_lab_10_tissue_sorted  D_lab_11_tissue_sorted  D_lab_33_tissue_sorted   D_lab_34_sperm_sorted 
+                      2                       1                       2                       2 
+ D_lab_36_tissue_sorted  D_lab_37_tissue_sorted  D_lab_A__tissue_sorted    D_lab_C_sperm_sorted 
+                      2                       1                       1                       1 
+  D_lab_E__sperm_sorted D_lab_UK_1_sperm_sorted D_lab_UK_6_sperm_sorted 
+                      1                       2                       2 
+Levels: 1 2
+
+$size
+[1] 14 21
+
+> diploria_clusters_dapc <- find.clusters(diploria.genlight, max.n.clust = 8, n.pca = 35)
+Choose the number of clusters (>=2): 
+2
+> diploria_clusters_dapc
+$Kstat
+     K=1      K=2      K=3      K=4      K=5      K=6      K=7      K=8 
+163.8845 163.0004 165.2227 167.4505 169.6492 171.8315 173.9403 176.0532 
+
+$stat
+     K=2 
+163.0004 
+
+$grp
+         440_dip_sorted          462_dip_sorted          401_dip_sorted          425_dip_sorted 
+                      2                       1                       1                       1 
+         402_dip_sorted          413_dip_sorted          427_dip_sorted          403_dip_sorted 
+                      1                       1                       2                       2 
+         417_dip_sorted          430_dip_sorted          420_dip_sorted          431_dip_sorted 
+                      1                       2                       1                       2 
+         405_dip_sorted          421_dip_sorted          432_dip_sorted          422_dip_sorted 
+                      1                       1                       2                       1 
+         435_dip_sorted          407_dip_sorted          423_dip_sorted          408_dip_sorted 
+                      2                       1                       1                       1 
+         424_dip_sorted          438_dip_sorted   D_lab_04_sperm_sorted  D_lab_09_tissue_sorted 
+                      2                       1                       2                       1 
+ D_lab_10_tissue_sorted  D_lab_11_tissue_sorted  D_lab_33_tissue_sorted   D_lab_34_sperm_sorted 
+                      1                       2                       1                       1 
+ D_lab_36_tissue_sorted  D_lab_37_tissue_sorted  D_lab_A__tissue_sorted    D_lab_C_sperm_sorted 
+                      1                       2                       2                       2 
+  D_lab_E__sperm_sorted D_lab_UK_1_sperm_sorted D_lab_UK_6_sperm_sorted 
+                      2                       1                       1 
+Levels: 1 2
+
+$size
+[1] 21 14
+
+```
+
+
+```{r}
+diploria_clusters_dapc <- find.clusters(diploria.genlight, max.n.clust = 8, n.pca = 35, n.clust = 2)
+diploria_clusters_dapc
+```
+
+
+```{r eval=FALSE}
+
+Choose the number PCs to retain (>=1): 
+35
+Choose the number of clusters (>=2): 
+2
+```
+
+
+## Based on the lowest BIC value we choose clusters (k=2)
+
+
+```{r}
+pop(diploria.genlight)<- diploria_clusters_dapc$grp
+dapc_diploria <- dapc(diploria.genlight, n.pca = 35, n.da = 2)
+dapc_diploria
+scatter.dapc(dapc_diploria, scree.pca = TRUE)
+```
+
+##  This DAPC scatter plot shows 2 very tightly grouped clusters because we overstimated by chossing all the PC. This is way we know want to evaluate the optimal number of PC to retain through the alfa score
+## DAPC requires enough PCs to secure a space with sufficient power of discrimination but must also avoid retaining too many dimensions that lead to over-fitting.
+## Using the a-score to measure the trade-off between power of discrimination and over-fitting. This score is simply the difference between the proportion of successful reassignment of the analysis (observed discrimination) and values obtained using random groups (random discrimination). It can be seen as the proportion of successful reassignment corrected for the number of retained PCs. It is implemented by a.score, which relies on repeating the DAPC analysis using randomized groups, and computing a-scores for each group, as well as the average a-score:
+
+
+```{r}
+a_score <- optim.a.score(dapc_diploria)  
+a_score
+```
+
+## Now we run dapc again but knowing that 1 PC is the optimal number and we keep the cluster assignation (k=2) previouly found with find.clusters. And wee keep 2 discriminant functions
+
+```{r}
+pop(diploria.genlight)<- diploria_clusters_dapc$grp
+dapc_diploria <- dapc(diploria.genlight, n.pca = 1, n.da = 2)
+dapc_diploria
+scatter.dapc(dapc_diploria, scree.pca = F, scree.da = F)
+```
+
+
+## Now, based on the PCA groupings and the assignation of individuals two the main DAPC, we color the DAPC to show the Spring and Autumn groups
+
+## Manually assign colors to each season Autumn ("#ee7733"), Spring ("#009988"), Unknown ("#0077bb"), and Both ("#e53d69")
+
+```{r}
+cols_dapc <- (values=c("#ee7733","#009988"))
+cols_dapc
+```
+
+```{r}
+scatter(dapc_diploria, scree.pca = F, scree.da = F, col=cols_dapc )
+```
+
+## Customizing plot
+
+### Step 1: Extract the raw data from the dapc object
+
+After running the dapc function, the resulting object contains various elements, such as individual coordinates (ind.coord), group labels (pop), and discriminant functions. You can use these components to build your own plots.
+
+```{r}
+# Assuming you already have the DAPC object:
+dapc_diploria <- dapc(diploria.genlight, n.pca = 1, n.da = 2)
+
+# Extract the PCA coordinates for each individual (the first two principal components)
+pca_scores <- dapc_diploria$ind.coord
+
+# Create a dataframe to use for ggplot (add population groups)
+pca_scores <- as.data.frame(pca_scores)
+pca_scores$pop <- diploria_clusters_dapc$grp  # Add population groups (e.g., spawning seasons)
+
+# View the first few rows of the PCA scores
+head(pca_scores)
+```
+
+
+dapc_diploria$ind.coord: This gives you the individual coordinates in the principal component space. It typically includes multiple columns (e.g., PC1, PC2, etc.).
+pca_scores$pop: This is the population or group labels you want to color in your density plot or scatter plot (e.g., spawning seasons).
+
+theme(text = element_text(size = 25, face = "plain")
+```{r}
+library(ggplot2)
+
+# Density plot for PC1 with no grid
+ggplot(pca_scores, aes(x = `LD1`, fill = pop)) + 
+  geom_density(alpha = 0.9) +  # Transparency set by alpha
+  scale_fill_manual(values = cols_dapc) +  # Custom colors
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 25, face = "plain"),
+    axis.title = element_text(size = 25, face = "plain"),
+    #legend.position = "top",  # Position legend at the top
+    #legend.title = element_blank(),
+    legend.background = element_rect(fill = "white", color = "black"),
+    panel.grid = element_blank()  # Remove all grid lines
+  ) +
+  labs(
+    x = "Discriminant Function 1",
+    y = "Density"
+  ) +
+  xlim(-6, 9)  # Adjust limits to desired range
+```
+
+
+```{r}
+library(ggplot2)
+
+# Density plot for PC1 with framed axes
+Dlab_DAPC<-ggplot(pca_scores, aes(x = `LD1`, fill = pop)) + 
+  geom_density(alpha = 0.9, color = "black", show.legend = FALSE) +  # Add black border to density areas
+  scale_fill_manual(values = cols_dapc) +  # Custom colors
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 20, face = "plain"),
+    axis.title = element_text(size = 20, face = "plain"),
+    legend.background = element_rect(fill = "white", color = "black"),
+    panel.grid = element_blank(),  # Remove all grid lines
+    panel.border = element_rect(color = "black", fill = NA, size = 1.5),  # Add black border around plot area
+    axis.line = element_blank(),  # Remove default axis lines
+    axis.ticks = element_line(color = "black", size = 1)  # Ensure tick marks are visible
+  ) +
+  labs(
+    x = "Discriminant Function 1",
+    y = "Density"
+  ) +
+  xlim(-6, 8.5)  # Adjust limits to desired range
+
+Dlab_DAPC
+```
+
+
+
+## Admixture analysis
+
+## 1,481 SNPs and 36 colonies
+
+## First, Export the VCF to PLINK format ( See 2.3 Export the VCF to PLINK format: http://evomics.org/learning/population-and-speciation-genomics/2016-population-and-speciation-genomics/fileformats-vcftools-plink/)
+
+
+
+## Admixture  to run this on the HWE and thinned vcf file 
+
+```{bash eval=FALSE}
+module load BCFtools/1.10.2-GCC-8.3.0
+
+
+bgzip -c diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf > diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf.gz
+
+
+
+```
+
+
+
+```{bash eval=FALSE}
+
+tabix -p vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf.gz
+
+
+```
+
+
+
+```{bash eval=FALSE}
+
+bcftools view -H diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf.gz | cut -f 1 | uniq | awk '{print $0"\t"$0}' > diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.chrom_map.txt 
+
+
+```
+
+
+
+```{bash eval=FALSE}
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf --plink --chrom-map diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.chrom_map.txt --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000
+
+
+
+```
+
+
+
+```{bash eval=FALSE}
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf
+	--chrom-map diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.chrom_map.txt
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000
+	--plink
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Writing PLINK PED and MAP files ... 
+	Read 1482 chromosome mapping file entries.
+Done.
+After filtering, kept 1481 out of a possible 1481 Sites
+Run Time = 1.00 seconds
+
+```
+
+
+
+## You should get these 2 
+
+```{bash eval=FALSE}
+ls diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.ped
+ls diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.map
+```
+
+
+## – Update the IDs using PLINK:
+
+
+## Make a new txt file 4 columns per row: ID, ID, pop, ID
+
+
+
+```{bash eval=FALSE}
+nano Diploria_updateID.txt
+
+440_dip_sorted	440_dip_sorted	Autumn	440_dip_sorted
+462_dip_sorted	462_dip_sorted	Spring	462_dip_sorted
+401_dip_sorted	401_dip_sorted	Spring	401_dip_sorted
+425_dip_sorted	425_dip_sorted	Unknown	425_dip_sorted
+402_dip_sorted	402_dip_sorted	Spring	402_dip_sorted
+413_dip_sorted	413_dip_sorted	Spring	413_dip_sorted
+427_dip_sorted	427_dip_sorted	Unknown	427_dip_sorted
+403_dip_sorted	403_dip_sorted	Autumn	403_dip_sorted
+417_dip_sorted	417_dip_sorted	Spring	417_dip_sorted
+430_dip_sorted	430_dip_sorted	Autumn	430_dip_sorted
+420_dip_sorted	420_dip_sorted	Spring	420_dip_sorted
+431_dip_sorted	431_dip_sorted	Autumn	431_dip_sorted
+405_dip_sorted	405_dip_sorted	Spring	405_dip_sorted
+421_dip_sorted	421_dip_sorted	Spring	421_dip_sorted
+432_dip_sorted	432_dip_sorted	Both	432_dip_sorted
+422_dip_sorted	422_dip_sorted	Spring	422_dip_sorted
+435_dip_sorted	435_dip_sorted	Spring	435_dip_sorted
+407_dip_sorted	407_dip_sorted	Unknown	407_dip_sorted
+423_dip_sorted	423_dip_sorted	Unknown	423_dip_sorted
+408_dip_sorted	408_dip_sorted	Spring	408_dip_sorted
+424_dip_sorted	424_dip_sorted	Autumn	424_dip_sorted
+438_dip_sorted	438_dip_sorted	Spring	438_dip_sorted
+D_lab_04_sperm_sorted	D_lab_04_sperm_sorted	Autumn	D_lab_04_sperm_sorted
+D_lab_09_tissue_sorted	D_lab_09_tissue_sorted	Unknown	D_lab_09_tissue_sorted
+D_lab_10_tissue_sorted	D_lab_10_tissue_sorted	Spring	D_lab_10_tissue_sorted
+D_lab_11_tissue_sorted	D_lab_11_tissue_sorted	Unknown	D_lab_11_tissue_sorted
+D_lab_20_tissue_sorted	D_lab_20_tissue_sorted	Spring	D_lab_20_tissue_sorted
+D_lab_33_tissue_sorted	D_lab_33_tissue_sorted	Spring	D_lab_33_tissue_sorted
+D_lab_34_sperm_sorted	D_lab_34_sperm_sorted	Spring	D_lab_34_sperm_sorted
+D_lab_36_tissue_sorted	D_lab_36_tissue_sorted	Spring	D_lab_36_tissue_sorted
+D_lab_37_tissue_sorted	D_lab_37_tissue_sorted	Unknown	D_lab_37_tissue_sorted
+D_lab_A__tissue_sorted	D_lab_A__tissue_sorted	Autumn	D_lab_A__tissue_sorted
+D_lab_C_sperm_sorted	D_lab_C_sperm_sorted	Autumn	D_lab_C_sperm_sorted
+D_lab_E__sperm_sorted	D_lab_E__sperm_sorted	Autumn	D_lab_E__sperm_sorted
+D_lab_UK_1_sperm_sorted	D_lab_UK_1_sperm_sorted	Spring	D_lab_UK_1_sperm_sorted
+D_lab_UK_6_sperm_sorted	D_lab_UK_6_sperm_sorted	Spring	D_lab_UK_6_sperm_sorted
+
+```
+
+
+
+## With –file the input .ped file is specified, with –update-ids the updated ID file, –recode tells PLINK to save the output as .ped file, and –out defines the output prefix.
+
+```{bash eval=FALSE}
+
+
+module load PLINK/1.07-foss-2016b
+
+plink --file diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000 --update-ids Diploria_updateID.txt --make-bed --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID
+
+```
+
+```{bash eval=FALSE}
+@----------------------------------------------------------@
+|        PLINK!       |     v1.07      |   10/Aug/2009     |
+|----------------------------------------------------------|
+|  (C) 2009 Shaun Purcell, GNU General Public License, v2  |
+|----------------------------------------------------------|
+|  For documentation, citation & bug-report instructions:  |
+|        http://pngu.mgh.harvard.edu/purcell/plink/        |
+@----------------------------------------------------------@
+
+Web-check not implemented on this system...
+Writing this text to log file [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.log ]
+Analysis started: Mon May 10 14:59:08 2021
+
+Options in effect:
+	--file diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000
+	--update-ids Diploria_updateID.txt
+	--make-bed
+	--out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID
+
+** For gPLINK compatibility, do not use '.' in --out **
+1481 (of 1481) markers to be included from [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.map ]
+Warning, found 36 individuals with ambiguous sex codes
+Writing list of these individuals to [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.nosex ]
+36 individuals read from [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.ped ] 
+0 individuals with nonmissing phenotypes
+Assuming a disease phenotype (1=unaff, 2=aff, 0=miss)
+Missing phenotype value is also -9
+0 cases, 0 controls and 36 missing
+0 males, 0 females, and 36 of unspecified sex
+Reading new FIDs and IIDs from [ Diploria_updateID.txt ]
+36 individuals found, 0 not in sample
+Before frequency and genotyping pruning, there are 1481 SNPs
+36 founders and 0 non-founders found
+Total genotyping rate in remaining individuals is 0.896485
+0 SNPs failed missingness test ( GENO > 1 )
+0 SNPs failed frequency test ( MAF < 0 )
+After frequency and genotyping pruning, there are 1481 SNPs
+After filtering, 0 cases, 0 controls and 36 missing
+After filtering, 0 males, 0 females, and 36 of unspecified sex
+Writing pedigree information to [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.fam ] 
+Writing map (extended format) information to [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bim ] 
+Writing genotype bitfile to [ diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed ] 
+Using (default) SNP-major mode
+
+Analysis finished: Mon May 10 14:59:08 2021
+```
+
+
+## Install Admixture
+## https://indo-european.eu/human-ancestry/admixture-ancestry-components-r-statistics-plink-convertf-bed-and-ped-files/ 
+
+
+```{bash eval=FALSE}
+mkdir Admixture
+cd Admixture
+
+cp /data/pradalab/mgomez/brevolium/Admixture/admixture_linux-1.3.0.tar.gz .
+tar -zxvf admixture_linux-1.3.0.tar.gz
+
+cd dist/admixture_linux-1.3.0/
+
+
+```
+
+
+```{bash eval=FALSE}
+
+cp ../../../diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID* .
+
+```
+
+
+## Run admixture 
+
+
+## Make a script and submit it
+
+```{bash eval=FALSE}
+nano admixt_k8.sh
+
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --mail-type=BEGIN  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=END  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=FAIL  --mail-user=matias_gomez@uri.edu
+cd $SLURM_SUBMIT_DIR
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 1
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 2
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 3
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 4
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 5
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 6
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 7
+./admixture diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.bed --cv=10 8
+
+
+for K in {1,2,3,4,5,6,7,8}; do ./admixture --cv=10 -j20 -B c $K | tee log${K}.out; done
+
+sbatch admixt_k8.sh
+Submitted batch job 1904424
+```
+
+## For some reason the results weren`t written to the log files for each run but the overall results are on the slurm job (slurm-1871483.out), so I am just gonna copy the CV values of each run to make the below file.
+
+## To identify the best value of k clusters which is the value with lowest cross-validation error, we need to collect the cv errors. 
+## https://speciationgenomics.github.io/ADMIXTURE/
+
+```{bash eval=FALSE}
+
+grep CV slurm-1904424.out > admixt_k8_CV.error
+cat admixt_k8_CV.error
+
+1 0.55001
+2 0.55591
+3 0.65631
+4 0.76459
+5 0.90851
+6 0.98106
+7 1.16843
+8 1.30687
+
+
+```
+
+```{r}
+ 0.55591-0.55001
+0.65631-0.55591
+```
+
+
+```{bash}
+nano admixt_k8_CV_error_table.txt
+
+k CV
+1 0.55001
+2 0.55591
+3 0.65631
+4 0.76459
+5 0.90851
+6 0.98106
+7 1.16843
+8 1.30687
+
+```
+
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+admixt_k8_CV_error_table.txt <- read.table("admixt_k8_CV_error_table.txt", header = T)
+admixt_k8_CV_error_table.txt
+```
+
+## Plot CV error 
+
+## https://github.com/laurabenestan/Admixture
+
+
+```{r}
+graph_title="Admixture Cross-Validation plot"
+x_title="K"
+y_title="Cross-validation error"
+graph_1<-ggplot(admixt_k8_CV_error_table.txt,aes(x=k,y=CV))
+graph_1+geom_line(size=1)+scale_x_continuous(breaks=c(1:10))+
+  labs(title=graph_title)+
+  labs(x=x_title)+
+  labs(y=y_title)+
+  theme_bw()+
+  theme(axis.text.x=element_text(colour="black"))+
+  theme(legend.title=element_blank())+
+  theme(axis.text.y=element_text(colour="black",size=18))+
+  theme(axis.text.x=element_text(colour="black",size=18))+
+  theme(panel.border = element_rect(colour="black", fill=NA, size=3),
+        axis.title=element_text(size=18,colour="black",family="Helvetica",face="bold"))
+```
+
+
+## Take a look at the CV (CROSS VALIDATION) lowest value. The lowest values is the one that best explains our data. In our particular case is k=1 with a CV= 0.55001, closely followed by k=2 CV=0.55591. Therefore, we want to plot at least the k=2 to see patterns of admixture 
+
+
+
+## k=2 is then the value we want to plot, but also plot k=3 and k=4 to see the differences of porbabilities of ancestry
+
+```{bash eval=FALSE}
+
+scp -r matias_gomez@bluewaves.uri.edu://data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2/Admixture/dist/admixture_linux-1.3.0/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.2.Q .
+
+```
+
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+library(RColorBrewer)
+
+tbl_k2 <- read.table("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.newID.2.Q")
+tbl_k2
+
+```
+
+
+```{r}
+cols_dapc <- (values=c("#ee7733","#009988"))
+cols_dapc
+```
+
+
+```{r}
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(tbl_k2)), col = cols_dapc, ylab = "Anc. Proportions", border= NA, space=0)
+```
+
+## Make a new Admixture table without Dlab_20 and new ID labels
+```{bash eval=FALSE}
+nano diploria_admixture_table_35ind.txt 
+
+Colony	Season	Prob_1	Prob_2	Admix_Season
+40	Autumn	0.99999	0.00001	Autumn
+12	Spring	0.00001	0.99999	Spring
+1	Spring	0.00001	0.99999	Spring
+25	Unknown	0.00001	0.99999	Spring
+2	Spring	0.00001	0.99999	Spring
+13	Spring	0.00001	0.99999	Spring
+27	Unknown	0.99999	0.00001	Autumn
+3	Autumn	0.99999	0.00001	Autumn
+17	Spring	0.00001	0.99999	Spring
+30	Autumn	0.99999	0.00001	Autumn
+20	Spring	0.00001	0.99999	Spring
+31	Autumn	0.99999	0.00001	Autumn
+5	Spring	0.00001	0.99999	Spring
+21	Spring	0.096644	0.903356	Spring
+32	Both	0.99999	0.00001	Autumn
+22	Spring	0.00001	0.99999	Spring
+35	Spring	0.99999	0.00001	Spring
+7	Unknown	0.00001	0.99999	Spring
+23	Unknown	0.006311	0.993689	Spring
+8	Spring	0.00001	0.99999	Spring
+24	Autumn	0.99999	0.00001	Autumn
+38	Spring	0.00001	0.99999	Spring
+4	Autumn	0.99999	0.00001	Autumn
+9	Unknown	0.00001	0.99999	Spring
+10	Spring	0.00001	0.99999	Spring
+11	Unknown	0.99999	0.00001	Autumn
+33	Spring	0.00001	0.99999	Spring
+34	Spring	0.00001	0.99999	Spring
+36	Spring	0.00001	0.99999	Spring
+37	Unknown	0.99999	0.00001	Autumn
+UK_8	Autumn	0.99999	0.00001	Autumn
+UK_10	Autumn	0.99999	0.00001	Autumn
+UK_11	Autumn	0.99999	0.00001	Autumn
+UK_1	Spring	0.00001	0.99999	Spring
+UK_6	Spring	0.00001	0.99999	Spring
+
+```
+
+
+
+```{r}
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+admix_table <- read.table("diploria_admixture_table_35ind.txt", header = T) 
+admix_table
+```
+
+
+## Plot ordered by Season
+```{r}
+ordered = admix_table[order(admix_table$Prob_1),]
+ordered
+
+
+```
+
+
+```{r}
+par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
+barplot(t(as.matrix(ordered[,3:4])), col = cols_dapc, ylab = "Anc. Proportions", border= NA, space=0,names.arg = (ordered$Colony), las =2)
+```
+
+```{r}
+# Create the bar plot for ancestral proportions
+Dlab_Admixture_k2<- barplot(t(as.matrix(ordered[, 3:4])), 
+        col = cols_dapc,         # Custom colors for the bars
+        ylab = "Ancestry Proportions", # Y-axis label
+        xlab= "Colony ID",
+        border = NA,             # No border around bars
+        space = 0.1,               # No space between bars
+        names.arg = ordered$Colony, # Colony names as X-axis labels
+        las = 2                   # Rotate X-axis labels vertically
+)
+
+Dlab_Admixture_k2
+```
+
+
+
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Reshape the data to long format for ggplot2
+ordered_long <- pivot_longer(ordered, 
+                             cols = c("Prob_1", "Prob_2"), 
+                             names_to = "Ancestor", 
+                             values_to = "Proportion")
+
+# Ensure 'Colony' is an ordered factor based on 'Prob_1'
+ordered_long$Colony <- factor(ordered_long$Colony, levels = ordered$Colony)
+
+# Create the stacked bar plot using ggplot2
+Dlab_Admixture_k2 <- ggplot(ordered_long, aes(x = Colony, y = Proportion, fill = Ancestor)) + 
+  geom_bar(stat = "identity", position = "stack", width = 0.9, color = "black") +  # Reduced width for closer bars
+  scale_fill_manual(values = cols_dapc) +  # Custom colors for the ancestors
+  labs(
+    x = "Colony ID", 
+    y = "Ancestry Proportions"
+  ) +
+  theme_minimal() + 
+  theme(
+    text = element_text(size = 20, face = "plain"),
+    axis.title = element_text(size = 20, face = "plain"),
+    axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels vertically
+    panel.grid = element_blank(),  # Remove grid lines
+    panel.border = element_rect(color = "black", fill = NA, size = 1.5),  # Border around the plot
+    legend.position = "none",  # Remove the legend
+    plot.margin = unit(c(0.5, 1, 0.5, 1), "cm")  # Further reduce the space between the plot and the edges
+  ) +
+  coord_cartesian(ylim = c(0, 1)) +  # Adjust the Y-axis to match the proportions (0 to 1)
+  scale_y_continuous(expand = c(0, 0))  # Remove space between bars and the top/bottom axis lines
+
+Dlab_Admixture_k2
+
+
+```
+
+
+
+
+```{r}
+# Install patchwork if you haven't already
+# install.packages("patchwork")
+
+# Load the patchwork package
+library(patchwork)
+
+# Combine the plots vertically and add labels
+Dlab_combined <- (Dlab_PCA + 
+                  plot_annotation(tag_levels = "(a)") & 
+                  theme(plot.tag = element_text(size = 20))) / 
+                 (Dlab_DAPC + 
+                  plot_annotation(tag_levels = "(b)") & 
+                  theme(plot.tag = element_text(size = 20))) / 
+                 (Dlab_Admixture_k2 + 
+                  plot_annotation(tag_levels = "(c)") & 
+                  theme(plot.tag = element_text(size = 20))) +
+  plot_annotation(tag_level = "a", tag_prefix = "(", tag_suffix = ")")
+
+# Display the combined plot
+Dlab_combined
+```
+
+
+
+```{r}
+
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
+ggsave("Dlab_combined_plot.pdf", 
+       plot = Dlab_combined, 
+       width = 30, 
+       height = 45, 
+       dpi = 300, 
+       units = "cm", 
+       bg = "white")
+       
+       
+       
+ggsave("Dlab_combined_plot.png", 
+       plot = Dlab_combined, 
+       width = 30, 
+       height = 45, 
+       dpi = 300, 
+       units = "cm", 
+       bg = "white")
+```
+
+
+
+
+
+## Genetic diversity statistics
+
+#http://popgen.nescent.org/StartSNP.html
+#In this vignette, you will calculate basic population genetic statistics from SNP data using R
+#packages. These statistics serve as exploratory analysis and require to work at the population
+#level. We will calculate:
+
+```{r}
+diploria.genind <- vcfR2genind(diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf)
+
+diploria.genind
+```
+
+
+## Assign pop to genind object
+
+```{r}
+admix_table_2 <- read.table("diploria_admixture_table_35ind.txt", header = T) 
+admix_table_2
+```
+
+
+
+
+```{r}
+pop(diploria.genind) <- admix_table_2$Admix_Season
+pop(diploria.genind) 
+```
+
+
+## Basic statistics
+
+```{r}
+library(hierfstat)
+Dlab_basicstats <- basic.stats(diploria.genind)
+Dlab_basicstats
+```
+
+
+## Get Ho, Hs and Fis to a list to get each statistics per population more easily
+
+
+```{r}
+
+Ho<-Dlab_basicstats["Ho"]
+class(Ho)
+head(Ho)
+
+Hs<-Dlab_basicstats["Hs"]
+head(Hs)
+
+Fis<-Dlab_basicstats["Fis"]
+head(Fis)
+```
+
+
+
+
+## #Ho, He and Fis. Hierfstat calculates these through basic.stats, but the every statistics must be 
+#converted to a df from a list to obtain mean and sd values
+#An alternative to get Ci for both Ho and He is to use mean_cl_boot which yields 95 % CI with 1000 boot
+
+
+## Ho Spring
+
+```{r}
+library(Hmisc)
+
+Ho<- as.data.frame(Ho)
+mean(Ho$Ho.Spring, na.rm=TRUE)
+sd(Ho$Ho.Spring)
+mean_cl_boot(Ho$Ho.Spring)
+
+```
+
+## He Spring
+
+
+```{r}
+# Hs corresponds to He
+Hs<- as.data.frame(Hs)
+
+mean(Hs$Hs.Spring, na.rm=TRUE)
+sd(Hs$Hs.Spring)
+mean_cl_boot(Hs$Hs.Spring)
+```
+
+## Fis Spring
+
+
+```{r}
+Fis<- as.data.frame(Fis)
+mean(Fis$Fis.Spring, na.rm=TRUE)
+sd(Fis$Fis.Spring,na.rm=TRUE)
+mean_cl_boot(Fis$Fis.Spring)
+
+```
+
+
+## Ho Autumn
+
+
+```{r}
+
+mean(Ho$Ho.Autumn)
+sd(Ho$Ho.Autumn)
+mean_cl_boot(Ho$Ho.Autumn)
+
+```
+
+
+## He Autumn
+
+```{r}
+mean(Hs$Hs.Autumn, na.rm=TRUE)
+sd(Hs$Hs.Autumn)
+mean_cl_boot(Hs$Hs.Autumn)
+```
+
+## Fis Autumn
+
+```{r}
+
+mean(Fis$Fis.Autumn, na.rm=TRUE)
+sd(Fis$Fis.Autumn,na.rm=TRUE)
+mean_cl_boot(Fis$Fis.Autumn)
+
+
+```
+
+
+## Pair wise Fst
+
+```{r}
+genet.dist(diploria.genind,diploid=TRUE,method="WC84")
+```
+
+## This table provides the three F statistics Fst (pop/total), Fit (Ind/total), and Fis (ind/pop). These are overall measures which take into account all genotypes and all loci.
+
+
+```{r}
+Dlab_Fst <-fstat(diploria.genind)
+Dlab_Fst
+```
+
+
+```{r}
+diploria_hierfstat <- genind2hierfstat(diploria.genind)
+```
+
+## Fst CI
+
+```{r}
+ind <- as.character(indNames(diploria.genind))
+pop <- as.character(pop(diploria.genind))
+diploria_hierfstat <- genind2hierfstat(diploria.genind)
+loci <-diploria_hierfstat[,-1]
+
+boot.vc(levels=data.frame(pop),loci,diploid=TRUE)
+```
+
+
+
+## PHYLOGENETICS
+
+
+## Maximum Likelihood phylogenetic tree
+
+```{bash eval=FALSE}
+cd /data/pradalab/mgomez/Diploria/curaçao/snp_filtering/analysis_v2
+
+mkdir phylogenetics
+cd  phylogenetics
+ln -s ../diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf .
+
+```
+
+
+## Make the file needed by PGDspider to transform from VCF to Phylip format
+
+
+
+```{bash eval=FALSE}
+nano vcf2phylip_spid.txt
+
+# VCF Parser questions
+PARSER_FORMAT=VCF
+
+# Only output SNPs with a phred-scaled quality of at least:
+VCF_PARSER_QUAL_QUESTION=
+# Select population definition file:
+VCF_PARSER_POP_FILE_QUESTION=
+# What is the ploidy of the data?
+VCF_PARSER_PLOIDY_QUESTION=DIPLOID
+# Do you want to include a file with population definitions?
+VCF_PARSER_POP_QUESTION=false
+# Output genotypes as missing if the phred-scale genotype quality is below:
+VCF_PARSER_GTQUAL_QUESTION=
+# Do you want to include non-polymorphic SNPs?
+VCF_PARSER_MONOMORPHIC_QUESTION=false
+# Only output following individuals (ind1, ind2, ind4, ...):
+VCF_PARSER_IND_QUESTION=
+# Only input following regions (refSeqName:start:end, multiple regions: whitespace separated):
+VCF_PARSER_REGION_QUESTION=
+# Output genotypes as missing if the read depth of a position for the sample is below:
+VCF_PARSER_READ_QUESTION=
+# Take most likely genotype if "PL" or "GL" is given in the genotype field?
+VCF_PARSER_PL_QUESTION=false
+# Do you want to exclude loci with only missing data?
+VCF_PARSER_EXC_MISSING_LOCI_QUESTION=false
+
+# PHYLIP (RAxML) Writer questions
+WRITER_FORMAT=PHYLIP
+
+# Save relaxed PHYLIP format (e.g. for RAxML)?
+PHYLIP_WRITER_RELAXED_QUESTION=true
+# Numeric SNP data: enter the integer that codes for nucleotide G:
+PHYLIP_WRITER_CODE_G_QUESTION=
+# Specify the DNA locus you want to write to the PHYLIP (RAxML) file or write "CONCAT" for concatenation:
+PHYLIP_WRITER_CONCATENATE_QUESTION="CONCAT"
+# Specify which data type should be included in the PHYLIP (RAxML) file  (PHYLIP (RAxML) can only analyze one data type per file):
+PHYLIP_WRITER_DATA_TYPE_QUESTION=DNA
+# Do you want to save an additional file with sequence partitions separating loci (may be used within RAxML)?
+PHYLIP_WRITER_PARTITION_QUESTION=false
+# Numeric SNP data: enter the integer that codes for nucleotide C:
+PHYLIP_WRITER_CODE_C_QUESTION=
+# Numeric SNP data: enter the integer that codes for nucleotide T:
+PHYLIP_WRITER_CODE_T_QUESTION=
+# Save partition file
+PHYLIP_WRITER_PARTITION_FILE_QUESTION=
+# Select the kind of file you want to write:
+PHYLIP_WRITER_DATA_KIND_QUESTION=SEQUENCE
+# Specify the locus/locus combination you want to write to the PHYLIP (RAxML) file:
+PHYLIP_WRITER_LOCUS_COMBINATION_QUESTION=
+# Numeric SNP data: enter the integer that codes for nucleotide A:
+PHYLIP_WRITER_CODE_A_QUESTION=
+
+
+```
+
+## transform vcf to bayescan format with PGDspider
+
+```{bash eval=FALSE}
+
+cp -r /data/pradalab/mgomez/pr_cline/outliers/PGDSpider_2.1.1.5 .
+
+java -jar PGDSpider_2.1.1.5/PGDSpider2-cli.jar -inputfile diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf -outputfile diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.phylip -spid vcf2phylip_spid.txt
+
+
+WARN  16:15:27 - PGDSpider configuration file not found! Loading default configuration.
+initialize convert process...
+read input file...
+read input file done.
+write output file...
+WARN  16:15:31 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:31 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:31 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:31 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+WARN  16:15:32 - The consensus sequence is taken, because the ploidy level is higher than 1!
+write output file done.
+
+```
+
+## Now run raxml-ng 
+
+```{bash eval=FALSE}
+conda install -c bioconda raxml-ng 
+
+```
+
+
+```{bash eval=FALSE}
+nano diploria_tree.sh
+
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --mail-type=BEGIN  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=END  --mail-user=matias_gomez@uri.edu
+#SBATCH --mail-type=FAIL  --mail-user=matias_gomez@uri.edu
+cd $SLURM_SUBMIT_DIR
+module load Anaconda3/5.3.0
+source activate diploria
+raxml-ng --all --msa diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.phylip --model GTR+FO --threads 2
+
+
+sbatch diploria_tree.sh
+
+Submitted batch job 1904452
+```
+
+
+
+
