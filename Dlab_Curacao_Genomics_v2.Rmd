@@ -2855,13 +2855,37 @@ Run Time = 0.00 seconds
 
 ## 1481 SNPs in 36 Ind
 
+## We still have one individual duplicated (420 and Dlab_20) that was not identified as a clone despite being a technical replicate. I had kept those two individuals in all the previous analyses so far. However, since they did not do harm nor good to the overall results, I am deleting the sample 420, based on its percentage of missingness of 13% with respect to 10% of Dlab_420, for visual and statistical purposes from here on. In short, having that extra individual did not biased in any way the results and I state this here for transparency.
 
+## Remove sample 420 from diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.vcf
 
+```{bash eval=FALSE}
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000.recode.vcf --remove-indv D_lab_20_tissue_sorted --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind
+```
 
+Output
 
 ```{bash,  eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
 
+Parameters as interpreted:
+        --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000.recode.vcf
+        --recode-INFO-all
+        --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind
+        --recode
+        --remove-indv D_lab_20_tissue_sorted
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Excluding individuals in 'exclude' list
+After filtering, kept 35 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 1481 out of a possible 1481 Sites
+Run Time = 1.00 seconds
 ```
+
 
 ```{bash,  eval=FALSE}
 
