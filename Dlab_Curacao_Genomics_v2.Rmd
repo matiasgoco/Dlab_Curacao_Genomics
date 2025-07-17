@@ -2887,20 +2887,52 @@ Run Time = 1.00 seconds
 ```
 
 
-Since we ended up with the exact same dataset, there's no need to redo any pop gen analyses here. Let's move to the phylogenetic inference part
+Since we ended up with the exact same dataset, there's no need to redo any pop gen analyses here. Let's move to the phylogeny inference part with SVDquartets
 
+Following https://github.com/ForBioPhylogenomics/tutorials/blob/main/species_tree_inference_with_snp_data/README.md
 
+## SVDquartets
 
-
+Input file must be in nexus format
 
 
 ```{bash,  eval=FALSE}
-
+cd /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review
 ```
+
+Make a new dir
 
 ```{bash,  eval=FALSE}
-
+mkdir SVDquartets
+cd SVDquartets
 ```
+
+
+copy file diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.phylip, this is the same file as previous analysis where I excluded outlier loci, but since we saw that even leeping those loci they end up being removed during the HWE filtering, I am using the excat same file
+
+```{bash,  eval=FALSE}
+cp /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/phylogenetics/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000.recode.phylip .
+```
+
+
+
+
+
+From previoulu used script to run SVDquartets:
+
+
+Quartets in PAUP
+I was not able to install PAUP in the Cluster so I downloaded it and ran it in my computer.
+First, using the PGDSPider I converted the vcf file into Fasta and then from Fasta to Nexus in PGDSpider as well. I used the the following files for the conversion: vcf_2_fasta.spid and Fasta_2_Nexus.spid
+I then had to edit the file manually to include the needed blocks of text to run the Quartets analysis and output the tree to edit in ITOL.
+Running PAUP in my computer I used the following code
+
+
+
+
+
+
+
 
 ```{bash,  eval=FALSE}
 
