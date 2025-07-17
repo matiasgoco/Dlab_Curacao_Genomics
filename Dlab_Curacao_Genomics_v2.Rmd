@@ -755,6 +755,7 @@ Run Time = 9.00 seconds
 ```
 
 
+
 ## 5301 SNPs in 36 ind
 
 
@@ -2688,6 +2689,20 @@ raxml-ng --all --msa diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoC
 sbatch diploria_tree.sh
 
 Submitted batch job 1904452
+```
+
+# Reanalyses after Molecular Ecology Review
+
+## Connect to unity cluster via ssh, using URI credentials
+
+```{bash}
+ssh unity
+```
+
+### Files are now at /project/pi_prada_uri_edu/mgomez/curaçao/
+
+```{bash}
+cd /project/pi_prada_uri_edu/mgomez/curaçao/
 ```
 
 
