@@ -2827,18 +2827,34 @@ Previously, we had "After filtering, kept 3857 out of a possible 4400 Sites". He
 
 
 ```{bash eval=FALSE}
-
-vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01.recode.vcf --thin 1000  --recode --recode-INFO-all --out 
-diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000
-
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01.recode.vcf --thin 1000  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000
 ```
 
-
+Output
 
 
 ```{bash,  eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
 
+Parameters as interpreted:
+        --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01.recode.vcf
+        --recode-INFO-all
+        --thin 1000
+        --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000
+        --recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 1481 out of a possible 3857 Sites
+Run Time = 0.00 seconds
 ```
+
+## 1481 SNPs in 36 Ind
+
 
 ```{bash,  eval=FALSE}
 
