@@ -2691,7 +2691,9 @@ sbatch diploria_tree.sh
 Submitted batch job 1904452
 ```
 
-# Reanalyses after Molecular Ecology Review
+#######################################################################
+
+# Reanalyses after Molecular Ecology Review (Minor revisions), July 2025
 
 ## Connect to unity cluster via ssh, using URI credentials
 
@@ -2705,6 +2707,117 @@ ssh unity
 cd /project/pi_prada_uri_edu/mgomez/curaçao/
 ```
 
+## Report results without removing outlier loci
+
+Remember that only 4 loci were found as common aoutlier between Bayescan and PCAdapat methods
+
+## 5301 SNPs in 36 ind, this is the VCF file prior to outlier loci filtering
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf
+
+```{bash eval=FALSE}
+cd /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2
+
+```
+
+Make a new dir for this 
+
+```{bash eval=FALSE}
+cd /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2
+mkdir analysis_v2_review
+cd analysis_v2_review
+```
+
+Make a symbolink link for "diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf" in the new dir
+
+
+```{bash eval=FALSE}
+ln -s ../diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf .
+```
+
+
+# Skipping all outlier detection methods (BayeScan and PCAdapt). LINES: 762-1287 on this Rmarkdown file
+
+
+## 5297 SNPs in 36 individuals after common outlier loci betwenn BayeScan and PCAdapt removed
+
+## Here we still have 5301 SNPs in 36 ind as no outliers were removed (even though they migh be removed in the next filtering steps)
+
+## Now apply a Minor Allele Frequency filter of 5% 
+
+Work on an interactive node by typying in salloc
+
+```{bash eval=FALSE}
+salloc
+```
+
+Load VCFtools 
+
+```{bash eval=FALSE}
+module load vcftools/0.1.16 
+```
+
+```{bash eval=FALSE}
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf  --maf 0.05  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05
+
+```
+
+output
+
+```{bash eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+        --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones.recode.vcf
+        --recode-INFO-all
+        --maf 0.05
+        --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05
+        --recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 4404 out of a possible 5301 Sites
+Run Time = 2.00 seconds
+```
+
+
+## 4404 SNPs in 36 individuals
+Previously, during this step, 4400 SNPs remained. Thus, here those four common outlier loci are present in the filter vcf
+
+## Let’s filter our SNPs by population specific HWE. Ideally we would like to filter per spawning population but since many colonies did not spawn we ignore what population they belong to. Therefore. I`m filtering out loci below 0.01 p-value
+
+
+```{bash eval=FALSE}
+
+```
+
+```{bash eval=FALSE}
+
+```
+
+```{bash eval=FALSE}
+
+```
+
+```{bash eval=FALSE}
+
+```
+
+
+```{bash eval=FALSE}
+
+```
+
+```{bash eval=FALSE}
+
+```
+
+```{bash eval=FALSE}
+
+```
 
 
 
