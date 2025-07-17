@@ -2990,6 +2990,13 @@ END;
 
 It looks good
 
+## Load PAUP
+
+```{bash,  eval=FALSE}
+module load PAUP/4.0a168-centos64
+```
+
+
 
 
 From previoulu used script to run SVDquartets:
