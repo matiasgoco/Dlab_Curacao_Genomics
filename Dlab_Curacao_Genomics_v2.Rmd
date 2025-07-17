@@ -2790,34 +2790,101 @@ Previously, during this step, 4400 SNPs remained. Thus, here those four common o
 ## Let’s filter our SNPs by population specific HWE. Ideally we would like to filter per spawning population but since many colonies did not spawn we ignore what population they belong to. Therefore. I`m filtering out loci below 0.01 p-value
 
 
+```{bash, eval=FALSE}
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05.recode.vcf  --hwe 0.01  --recode --recode-INFO-all --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01 
+```
+
+Output
+
+```{bash,  eval=FALSE}
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+        --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05.recode.vcf
+        --recode-INFO-all
+        --max-alleles 2
+        --hwe 0.01
+        --out diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01
+        --recode
+
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Ref+, Ref-, Alt+, Alt-">
+After filtering, kept 36 out of 36 Individuals
+Outputting VCF file...
+After filtering, kept 3857 out of a possible 4404 Sites
+Run Time = 1.00 seconds
+```
+
+## 3857 SNPs in 36 Ind
+
+Previously, we had "After filtering, kept 3857 out of a possible 4400 Sites". Here, we ended up with exactly that same number of SNPs as before
+
+## First thin the vcf to break up potential patterns of LD in the dataset
+
+## Apply an LD filter, keep a SNP per every 1000 pb
+
+
 ```{bash eval=FALSE}
+
+vcftools --vcf diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01.recode.vcf --thin 1000  --recode --recode-INFO-all --out 
+diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000
 
 ```
 
-```{bash eval=FALSE}
+
+
+
+```{bash,  eval=FALSE}
 
 ```
 
-```{bash eval=FALSE}
+```{bash,  eval=FALSE}
 
 ```
 
-```{bash eval=FALSE}
+```{bash,  eval=FALSE}
+
+```
+
+```{bash,  eval=FALSE}
+
+```
+
+```{bash,  eval=FALSE}
 
 ```
 
 
-```{bash eval=FALSE}
+```{bash,  eval=FALSE}
 
 ```
 
-```{bash eval=FALSE}
+```{bash,  eval=FALSE}
 
 ```
 
-```{bash eval=FALSE}
+
+```{bash,  eval=FALSE}
 
 ```
 
+```{bash,  eval=FALSE}
+
+```
+
+
+```{bash,  eval=FALSE}
+
+```
+
+```{bash,  eval=FALSE}
+
+```
+
+```{bash,  eval=FALSE}
+
+```
 
 
