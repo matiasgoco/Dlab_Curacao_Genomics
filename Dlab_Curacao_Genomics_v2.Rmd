@@ -2996,6 +2996,55 @@ It looks good
 module load PAUP/4.0a168-centos64
 ```
 
+To start PAUP just type in paup
+
+```{bash,  eval=FALSE}
+paup
+```
+
+now you should see: paup>
+
+The to load your file run
+
+```{bash,  eval=FALSE}
+execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.nex
+```
+
+output
+
+```{bash}
+Processing of file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
+D1000_35ind.recode.nex" begins...
+
+Data read in DNA format
+
+Data matrix has 35 taxa, 1481 characters
+Valid character-state symbols: ACGT
+Missing data identified by 'N'
+Gaps identified by '-'
+"Equate" macros in effect:
+   R,r ==> {AG}
+   Y,y ==> {CT}
+   M,m ==> {AC}
+   K,k ==> {GT}
+   S,s ==> {CG}
+   W,w ==> {AT}
+   H,h ==> {ACT}
+   B,b ==> {CGT}
+   V,v ==> {ACG}
+   D,d ==> {AGT}
+
+Processing of input file "diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.nex" completed.
+```
+
+
+Then, simply start the SVDQuartets analysis with PAUP*'s svdQuartets command (the default settings correspond exactly to those used above for the analysis with the GUI version):
+
+to quit paup just type in quit
+
+
+
 
 
 
@@ -3015,9 +3064,7 @@ Running PAUP in my computer I used the following code
 
 
 
-```{bash,  eval=FALSE}
 
-```
 
 
 ```{bash,  eval=FALSE}
