@@ -2819,7 +2819,7 @@ Run Time = 1.00 seconds
 
 ## 3857 SNPs in 36 Ind
 
-Previously, we had "After filtering, kept 3857 out of a possible 4400 Sites". Here, we ended up with exactly that same number of SNPs as before
+Previously, we had "After filtering, kept 3857 out of a possible 4400 Sites". Here, we ended up with exactly that same number of SNPs as before.
 
 ## First thin the vcf to break up potential patterns of LD in the dataset
 
@@ -2854,6 +2854,9 @@ Run Time = 0.00 seconds
 ```
 
 ## 1481 SNPs in 36 Ind
+
+
+
 
 
 ```{bash,  eval=FALSE}
