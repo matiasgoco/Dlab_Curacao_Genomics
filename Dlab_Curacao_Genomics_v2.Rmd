@@ -3209,7 +3209,7 @@ salloc --mem=16G --cpus-per-task=2 --time=4:00:00 --partition=cpu
 It's still taking a while so trying to run it much faster using evalQuartets=random, showScores=no, nthreads=2
 
 ```{bash}
-svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=random treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=no nthreads=2
+#svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=random treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=no nthreads=2
 ```
 
 
@@ -3224,47 +3224,102 @@ svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all tr
 It seems to have worked. It worked well
 
 Now, let's make a consensus tree to have bootstrap values displayed on Itol or figtree
-
-
-
-
-
-
-
-
-
-
-
-
-
+https://isu-molphyl.github.io/EEOB563/computer_labs/lab2/PAUP.html
 ```{bash,  eval=FALSE}
-
+module load uri/main
+module load PAUP/4.0a168-centos64
 ```
 
-```{bash,  eval=FALSE}
 
+To start PAUP just type in paup
+
+```{bash,  eval=FALSE}
+paup
 ```
 
 
 ```{bash,  eval=FALSE}
-
-```
-
-```{bash,  eval=FALSE}
-
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_Consensus_tree.log
 ```
 
 
-```{bash,  eval=FALSE}
+Output
 
+```{bash,  eval=FALSE}
+-----------------------------NOTICE-----------------------------
+          This is a test version that is still changing rapidly.
+          Please report bugs to dave@phylosolutions.com
+        ----------------------------------------------------------------
+
+Logging output to file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
+D1000_35ind.recode_Consensus_tree.log".
+```
+
+
+```{bash,  eval=FALSE}
+execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree
+```
+
+Output
+
+```{bash,  eval=FALSE}
+Processing of file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
+D1000_35ind.recode.svdq.tree" begins...
+
+100 trees read from TREES block; time used = 0.01 sec (CPU time = 0.01 sec)
+
+Processing of input file "diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree" completed.
+```
+
+Generate a majority-rule consensus tree:
+
+```{bash,  eval=FALSE}
+contree ?
 ```
 
 ```{bash,  eval=FALSE}
+Usage: contree [tree-list] [/ options...];
 
+Available options:
+
+Keyword ------- Option type -------------------------------------- Current setting -----------------
+strict          no|yes                                             yes
+semistrict      no|yes                                             no
+adams           no|yes                                             no
+majRule         no|yes                                             no
+percent         <integer-value>                                    50
+LE50            no|yes                                             no
+useTreeWts      no|yes                                             no
+grpFreq         no|yes                                             yes
+indices         no|yes                                             no
+showTree        no|yes                                             yes
+treeFile        <output-treefile-name>                             none
+saveAsRooted    no|yes                                             no
+saveSupport     no|brlens|nodeLabels|Both                          nodeLabels
+format          Nexus|altNexus|Freqpars|Newick|Hennig|Phylip       none
+replace         no|yes                                            *no
+append          no|yes                                            *no
+tcompress       no|yes                                             no
+rootMethod      outgroup|lundberg|midpoint                         outgroup
+outRoot         polytomy|paraphyletic|monophyletic                 polytomy
+forcePolytomy   no|yes                                             no
+                                                                  *Option is nonpersistent
 ```
 
-```{bash,  eval=FALSE}
 
+
+```{bash,  eval=FALSE}
+contree all/strict=no majrule=yes saveAsRooted=no useTreeWts=yes saveSupport=nodeLabels format=Newick treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq_Consensus_Newick.tree
+```
+
+Output
+
+
+```{bash,  eval=FALSE}
+Consensus tree(s) written to treefile:
+/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq_Consensus_Newick.tree
 ```
 
 
