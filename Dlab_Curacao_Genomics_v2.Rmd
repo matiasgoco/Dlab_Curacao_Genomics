@@ -2993,6 +2993,11 @@ It looks good
 ## Load PAUP
 
 ```{bash,  eval=FALSE}
+cd /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/
+```
+
+```{bash,  eval=FALSE}
+module load uri/main
 module load PAUP/4.0a168-centos64
 ```
 
@@ -3005,9 +3010,32 @@ paup
 now you should see: paup>
 
 The to load your file run
+https://www.phylosolutions.com/tutorials/ssb2018/svdquartets-tutorial.html:
+Start PAUP and load the data file. Using the command-line interface, type:
+The first command argument above is the name of the data file, and the "-L" option opens a log file that will preserve all of the output of your run (you can use any name you like for the log file).
+
 
 ```{bash,  eval=FALSE}
-execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.nex
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.log
+```
+
+
+```{bash,  eval=FALSE}
+
+
+        -----------------------------NOTICE-----------------------------
+          This is a test version that is still changing rapidly.
+          Please report bugs to dave@phylosolutions.com
+        ----------------------------------------------------------------
+
+Logging output to file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
+D1000_35ind.recode.log".
+```
+
+
+```{bash,  eval=FALSE}
+execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.nex 
 ```
 
 output
@@ -3039,6 +3067,134 @@ Processing of input file "diploria2_SNPs_2alleles_30phred_30x_50missgen_50missin
 ```
 
 
+https://github.com/ForBioPhylogenomics/tutorials/blob/main/species_tree_inference_with_snp_data/README.md : 
+To specify the two individuals of Astatotilapia burtoni ("IZA1" and "IZC5") as the outgroup, we first need to find out which numbers PAUP* is using for these two individuals in its taxon list. To get these numbers, use PAUP*s tstatus command with option full:
+
+To find out the list of individuals in paup
+
+
+```{bash,  eval=FALSE}
+tstatus full
+```
+
+Output
+```{bash,  eval=FALSE}
+Taxon-status summary:
+   Original data matrix contains 35 taxa
+   No taxa have been deleted
+   No taxa have been assigned to the outgroup: outgroup defaults to first taxon (440 dip sorted)
+
+Current status of all taxa:
+
+   Taxon                    Status
+ 1 440 dip sorted           -
+ 2 462 dip sorted           -
+ 3 401 dip sorted           -
+ 4 425 dip sorted           -
+ 5 402 dip sorted           -
+ 6 413 dip sorted           -
+ 7 427 dip sorted           -
+ 8 403 dip sorted           -
+ 9 417 dip sorted           -
+10 430 dip sorted           -
+11 420 dip sorted           -
+12 431 dip sorted           -
+13 405 dip sorted           -
+14 421 dip sorted           -
+15 432 dip sorted           -
+16 422 dip sorted           -
+17 435 dip sorted           -
+18 407 dip sorted           -
+19 423 dip sorted           -
+20 408 dip sorted           -
+21 424 dip sorted           -
+22 438 dip sorted           -
+23 D lab 04 sperm sorted    -
+24 D lab 09 tissue sorted   -
+25 D lab 10 tissue sorted   -
+26 D lab 11 tissue sorted   -
+27 D lab 33 tissue sorted   -
+28 D lab 34 sperm sorted    -
+29 D lab 36 tissue sorted   -
+30 D lab 37 tissue sorted   -
+31 D lab A  tissue sorted   -
+32 D lab C sperm sorted     -
+33 D lab E  sperm sorted    -
+34 D lab UK 1 sperm sorted  -
+35 D lab UK 6 sperm sorted  -
+```
+
+To start off with, we do not have a real outgroup as everything comes from the same species and we did not sequence any other taxa here
+
+https://www.asc.ohio-state.edu/kubatko.2//phylogenomics2019/SpeciesTreeTutorial.html
+
+We will analyze these data using SVDQuartets (or just SVDQ). First, let's look at a list of possible options, by using PAUP*'s help system. At the PAUP* command line, type:
+
+```{bash,  eval=FALSE}
+svdq ?
+```
+
+```{bash,  eval=FALSE}
+Usage: svdQuartets [options...];
+
+Available options:
+
+Keyword ------- Option type -------------------------------------- Current setting -----------------
+evalQuartets    all|random                                         random
+nquartets       <real-value>                                       100000
+preferAllQ      no|yes                                             yes
+taxpartition    <taxpartition-name>|none                           none
+treeInf         QFM|curTrees|none                                  QFM
+seed            <int> or <int:int:int:int>                         0
+bootstrap       no|standard|multilocus                             no
+loci            <charpartition-name>                               (none)
+nreps           <integer-value>                                    100
+nthreads        auto|<number-of-threads>                           2
+mrpFile         <MRP-outfile-name>                                 none
+qfile           <quartet-file-name>                                none
+qformat         qmc|qfm                                            qmc
+replace         no|yes                                            *no
+showScores      no|yes                                             no
+showSV          no|yes                                             no
+treefile        <filename-for-treefile>                            none
+treemodel       mscoalescent|shared                                mscoalescent
+forceRank       <integer-value>                                    0
+keepQuartets    no|yes                                             no
+ambigs          missing|distribute                                 distribute
+plus2           no|yes                                             no
+
+The following options are for experimental research and are not generally safe/useful:
+
+Keyword ------- Option type -------------------------------------- Current setting -----------------
+includeInAll    no|<taxon-id>|<partition-subset-name>             *none
+qweights        none|reciprocal|exponential                        none
+wtlambda        <real-value>                                       1000
+lakeInvar       no|yes                                             no
+frobDFile       <filename-for-Frobenius-dists>                     none
+                                                                  *Option is nonpersistent
+```
+
+
+https://www.phylosolutions.com/tutorials/ssb2018/svdquartets-tutorial.html
+
+Let's run SVDquartets with no specified outgroup (1st taxon as outgroup by default: 440 dip sorted). Also, no partition chosen, that is no lineage specified, 
+
+https://www.asc.ohio-state.edu/kubatko.2//phylogenomics2019/SpeciesTreeTutorial.html:
+
+Now we'll consider constructing a lineage tree, a tree relating the individual sequences. Although this tree can be difficult to interpret, it may be helpful in exploring your data, finding mis-identified sequences, etc.
+
+https://molevolworkshop.github.io/faculty/kubatko/pdf/species-trees-tutorial-2023.html:
+For example, you can see that it is possible to evaluate quartets exhaustively (“evalquartets=all”) or sample quartets randomly (“evalquartets=random nquartets=n”). Typically, you will leave most options set at their default settings, and enter values only for those you wish to override. One exception is that the current default setting for evalquartets is random (this may change in a future version), so we will explicitly request evaluation of all possible quartets. We’ll also do a bootstrap analysis to assess confidence in the result:
+
+```{bash}
+svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=yes
+```
+
+It's running
+
+
+
+#################
 Then, simply start the SVDQuartets analysis with PAUP*'s svdQuartets command (the default settings correspond exactly to those used above for the analysis with the GUI version):
 
 to quit paup just type in quit
@@ -3048,7 +3204,7 @@ to quit paup just type in quit
 
 
 
-From previoulu used script to run SVDquartets:
+From previously used script to run SVDquartets:
 
 
 Quartets in PAUP
