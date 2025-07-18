@@ -2997,9 +2997,17 @@ cd /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_
 ```
 
 ```{bash,  eval=FALSE}
+#salloc # TO RUN ON INTERCATIVE NODE
+salloc --mem=16G --cpus-per-task=2 --time=2:00:00 --partition=cpu # Increase resources and time
 module load uri/main
 module load PAUP/4.0a168-centos64
 ```
+
+```{bash,  eval=FALSE}
+module load uri/main
+module load PAUP/4.0a168-centos64
+```
+
 
 To start PAUP just type in paup
 
@@ -3190,7 +3198,35 @@ For example, you can see that it is possible to evaluate quartets exhaustively (
 svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=yes
 ```
 
-It's running
+It's running but quit
+
+
+Let's try to run on the intearctive node with more resources allocated
+
+```{bash}
+# salloc --mem=24G --cpus-per-task=4 --time=2:00:00 --partition=cpu
+salloc --mem=16G --cpus-per-task=2 --time=2:00:00 --partition=cpu
+
+```
+
+
+https://molevolworkshop.github.io/faculty/kubatko/pdf/species-trees-tutorial-2023.html
+Analysis 1: Using SVDQuartets and qAge
+
+NOTE for MOLE 2023: The version of PAUP* running on the MOLE virtual machines has a bug that sometimes causes crashes when multithreading is used with SVDQuartets. (This is probably a long-standing bug that we are are just noticing on very fast CPUs.) To avoid this problem, we will specify “nthreads=1” to suppress multithreading when running SVDQuartets. This is only a temporary limitation, and this notice will be removed once the bug is fixed. 
+
+
+```{bash}
+svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=yes nthreads=1
+```
+
+
+Let's try with evalQuartets=random
+
+```{bash}
+svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=random treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=yes
+```
+
 
 
 
