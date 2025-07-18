@@ -3322,4 +3322,4 @@ Consensus tree(s) written to treefile:
 /project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq_Consensus_Newick.tree
 ```
 
-
+Now work on itol for tree editing
