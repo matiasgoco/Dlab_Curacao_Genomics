@@ -611,7 +611,7 @@ Run Time = 9.00 seconds
 
 ```{r}
 library(vcfR)
-
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf<-read.vcfR("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf")
 
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind.recode.vcf
@@ -3024,10 +3024,11 @@ The first command argument above is the name of the data file, and the "-L" opti
 
 
 ```{bash,  eval=FALSE}
-log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.log
+# log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.log
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_ALL_Quartets.log
 ```
 
-
+old output
 ```{bash,  eval=FALSE}
 
 
@@ -3040,6 +3041,20 @@ Logging output to file
 "/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
 D1000_35ind.recode.log".
 ```
+
+new output
+
+```{bash, eval=FALSE}
+        -----------------------------NOTICE-----------------------------
+          This is a test version that is still changing rapidly.
+          Please report bugs to dave@phylosolutions.com
+        ----------------------------------------------------------------
+
+Logging output to file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.r
+ecode_ALL_Quartets.log".
+```
+
 
 
 ```{bash,  eval=FALSE}
@@ -3218,7 +3233,11 @@ It's still taking a while so trying to run it much faster using evalQuartets=ran
 Let's see if we can run it with evalQuartets=random but still using 2 threads and not showing scores
 
 ```{bash}
-svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=no nthreads=2
+# svdq partition=none seed=475839 bootstrap=standard nreps=100 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree showScores=no nthreads=2
+```
+
+```{bash}
+svdq partition=none seed=475839 bootstrap=standard nreps=1000 evalQuartets=all treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.ALL_Quartets_1000_Boots.tree showScores=no nthreads=2
 ```
 
 It seems to have worked. It worked well
@@ -3239,12 +3258,13 @@ paup
 
 
 ```{bash,  eval=FALSE}
-log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_Consensus_tree.log
+#log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_Consensus_tree.log
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_ALL_Quartets_1000_Boots_Consensus_tree.log
 ```
 
 
 Output
-
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_Consensus_tree.log
 ```{bash,  eval=FALSE}
 -----------------------------NOTICE-----------------------------
           This is a test version that is still changing rapidly.
@@ -3256,13 +3276,30 @@ Logging output to file
 D1000_35ind.recode_Consensus_tree.log".
 ```
 
+Output
+log file=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode_ALL_Quartets_1000_Boots_Consensus_tree.log
+```{bash,  eval=FALSE}
+-----------------------------NOTICE-----------------------------
+          This is a test version that is still changing rapidly.
+          Please report bugs to dave@phylosolutions.com
+        ----------------------------------------------------------------
+
+Logging output to file
+"/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.r
+ecode_ALL_Quartets_1000_Boots_Consensus_tree.log".
+```
+
+      
+
+
 
 ```{bash,  eval=FALSE}
-execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree
+#execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree
+execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.ALL_Quartets_1000_Boots.tree
 ```
 
 Output
-
+execute diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq.tree
 ```{bash,  eval=FALSE}
 Processing of file
 "/project/pi_prada_uri_edu/mgomez/curaçao/snp_filtering/analysis_v2/analysis_v2_review/SVDquartets/diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_L
@@ -3311,8 +3348,14 @@ forcePolytomy   no|yes                                             no
 
 
 ```{bash,  eval=FALSE}
-contree all/strict=no majrule=yes saveAsRooted=no useTreeWts=yes saveSupport=nodeLabels format=Newick treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq_Consensus_Newick.tree
+# contree all/strict=no majrule=yes saveAsRooted=no useTreeWts=yes saveSupport=nodeLabels format=Newick treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.svdq_Consensus_Newick.tree
 ```
+
+```{bash,  eval=FALSE}
+contree all/strict=no majrule=yes saveAsRooted=no useTreeWts=yes saveSupport=nodeLabels format=Newick treefile=diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_maf05_hwe01_LD1000_35ind.recode.ALL_Quartets_1000_Boots_Newick.tree
+```
+
+
 
 Output
 
