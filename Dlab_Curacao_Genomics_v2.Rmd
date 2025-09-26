@@ -1440,6 +1440,7 @@ Run Time = 4.00 seconds
 ```{r}
 setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
 library(vcfR)
+library(adegenet)
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf <-read.vcfR("diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf")
 diploria2_SNPs_2alleles_30phred_30x_50missgen_50missind_NoClones_neutral_maf05_hwe01_LD1000_35ind.recode.vcf 
 ```
@@ -1536,7 +1537,7 @@ pop
 
 ## Manually assign colors to each season Autumn (#FF9833), Spring (#01B050), Unknown (#000000), and Both (#CC0099)
 
-```{r}
+```{r, eval=FALSE}
 cols_season <- (values=c( "#FF9833","#CC0099","#01B050","#000000"))
 cols_season
 ```
@@ -1558,8 +1559,20 @@ Unknown: Blue (0, 119, 187)
 
 Border around all panels: Gray (213, 218, 219)
 
-```{r}
-cols_season <- (values=c( "#ee7733","#e53d69","#009988","#0077bb"))
+```{r, eval=FALSE}
+#cols_season <- (values=c( "#ee7733","#e53d69","#009988","#0077bb"))
+#cols_season
+```
+
+Changing colors to a blind friendly palette
+
+Spring: #009e73 (Green)
+Autumn: #e69f00 (Orange)
+Both seasons: #cc79a7 (Pink)
+Unknown season: #0072b2 (Dark blue)
+
+```{r, eval=FALSE}
+cols_season <- (values=c( "#e69f00","#cc79a7","#009e73","#0072b2"))
 cols_season
 ```
 
