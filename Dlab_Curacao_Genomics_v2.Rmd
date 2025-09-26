@@ -1624,9 +1624,11 @@ Dlab_PCA <- p +
   ylab("PC2 (3.8 %)") + 
   labs(color = "Spawning Season") + 
   theme(text = element_text(size = 20, face = "plain"),
-        legend.position = c(0.5, 0.7),  # Center the legend
+        legend.position = c(0.55, 0.7),  # Center the legend
         legend.justification = c(0.5, 0.5),   # Move legend further up (adjust Y-value)
-        legend.background = element_rect(fill = "white", color = "black")) # Optional: add background to legend
+        #legend.background = element_rect(fill = "white", color = "black"), # Optional: add background to legend
+        legend.box.margin = margin(8, 8, 8, 8)  # add padding inside the background box
+  )
 
 # Print the plot
 Dlab_PCA
@@ -2213,11 +2215,24 @@ tbl_k2
 ```
 
 
-```{r}
-cols_dapc <- (values=c("#ee7733","#009988"))
-cols_dapc
+```{r, eval=F}
+#cols_dapc <- (values=c("#ee7733","#009988"))
+# cols_dapc
 ```
 
+
+Changing colors to a blind friendly palette
+
+Spring: #009e73 (Green)
+Autumn: #e69f00 (Orange)
+Both seasons: #cc79a7 (Pink)
+Unknown season: #0072b2 (Dark blue)
+
+
+```{r}
+cols_dapc <- (values=c("#e69f00","#009e73"))
+cols_dapc
+```
 
 ```{r}
 par(c(1.5, 4, 2.5, 2), cex.lab=0.75,cex.axis=0.6)
@@ -2376,22 +2391,22 @@ Dlab_combined
 
 ```{r}
 
-setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2")
-ggsave("Dlab_combined_plot.pdf", 
+setwd("/Users/matiasgcvc/Desktop/Dlab_Reanalysis/Reanalysis_v2/Figures_MS/Blind_Friendly_Figures_Dlab_2025")
+ggsave("Dlab_combined_plot_v2.pdf", 
        plot = Dlab_combined, 
        width = 30, 
        height = 45, 
-       dpi = 300, 
+       dpi = 600, 
        units = "cm", 
        bg = "white")
        
        
        
-ggsave("Dlab_combined_plot.png", 
+ggsave("Dlab_combined_plot_v2.png", 
        plot = Dlab_combined, 
        width = 30, 
        height = 45, 
-       dpi = 300, 
+       dpi = 600, 
        units = "cm", 
        bg = "white")
 ```
