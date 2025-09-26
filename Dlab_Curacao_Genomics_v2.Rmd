@@ -1763,14 +1763,32 @@ scatter.dapc(dapc_diploria, scree.pca = F, scree.da = F)
 
 ## Manually assign colors to each season Autumn ("#ee7733"), Spring ("#009988"), Unknown ("#0077bb"), and Both ("#e53d69")
 
+```{r, eval=FALSE}
+#cols_dapc <- (values=c("#ee7733","#009988"))
+#cols_dapc
+```
+
 ```{r}
-cols_dapc <- (values=c("#ee7733","#009988"))
+scatter(dapc_diploria, scree.pca = F, scree.da = F, col=cols_dapc )
+```
+
+Changing colors to a blind friendly palette
+
+Spring: #009e73 (Green)
+Autumn: #e69f00 (Orange)
+Both seasons: #cc79a7 (Pink)
+Unknown season: #0072b2 (Dark blue)
+
+
+```{r}
+cols_dapc <- (values=c("#e69f00","#009e73"))
 cols_dapc
 ```
 
 ```{r}
 scatter(dapc_diploria, scree.pca = F, scree.da = F, col=cols_dapc )
 ```
+
 
 ## Customizing plot
 
