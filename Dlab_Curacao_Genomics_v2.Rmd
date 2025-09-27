@@ -1622,13 +1622,14 @@ Dlab_PCA <- p +
   theme_test() + 
   xlab("PC1 (12.3 %)") + 
   ylab("PC2 (3.8 %)") + 
-  labs(color = "Spawning Season") + 
+  labs(color = "Spawning season") + 
   theme(text = element_text(size = 20, face = "plain"),
         legend.position = c(0.55, 0.7),  # Center the legend
         legend.justification = c(0.5, 0.5),   # Move legend further up (adjust Y-value)
         #legend.background = element_rect(fill = "white", color = "black"), # Optional: add background to legend
-        legend.box.margin = margin(8, 8, 8, 8)  # add padding inside the background box
-  )
+        legend.box.margin = margin(8, 8, 8, 8),  # add padding inside the background box
+        panel.border = element_rect(color = "black", fill = NA, size = 1.5))  # match thickness
+         
 
 # Print the plot
 Dlab_PCA
@@ -2381,7 +2382,7 @@ Dlab_combined <- (Dlab_PCA +
                  (Dlab_Admixture_k2 + 
                   plot_annotation(tag_levels = "(c)") & 
                   theme(plot.tag = element_text(size = 20))) +
-  plot_annotation(tag_level = "a", tag_prefix = "(", tag_suffix = ")")
+  plot_annotation(tag_level = "a", tag_prefix = "(", tag_suffix = ")") 
 
 # Display the combined plot
 Dlab_combined
