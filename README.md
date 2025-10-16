@@ -5,7 +5,7 @@
 
 This repository contains scripts and data associated with the publication:
 
-**[Chamberland VF, Gómez-Corrales M, Marhaver KL, Bongaerts P, Latijnhouwers KR, Vergara-Flórez DC, Snowden S, Sánchez JA, Vermeij MJ(2025). Discovery of Genetically Distinct, Sympatric Coral Lineages With Temporal but Not Gametic Reproductive Isolation. *Molecular Ecology* e70138](https://doi.org/10.1111/mec.70138)**
+**[Chamberland VF, Gómez-Corrales M, Marhaver KL, Bongaerts P, Latijnhouwers KR, Vergara-Flórez DC, Snowden S, Sánchez JA, Vermeij MJ (2025). Discovery of Genetically Distinct, Sympatric Coral Lineages With Temporal but Not Gametic Reproductive Isolation. *Molecular Ecology* e70138](https://doi.org/10.1111/mec.70138)**
 
 All analyses were conducted in R (4.4.2, 2024-10-31)
 
